@@ -1,0 +1,11 @@
+// drizzle.config.ts
+import { defineConfig } from 'drizzle-kit';
+
+export default defineConfig({
+  schema: './drizzle/schema.ts',  // Path to your schema file
+  out: './drizzle/migrations',    // Path for migration output
+  dialect: 'mysql',                   // MySQL dialect
+  dbCredentials: {
+    url: `${process.env.DATABASE_URL}`,   // Use DATABASE_URL from environment variables
+  },
+});
