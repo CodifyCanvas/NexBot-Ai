@@ -27,16 +27,16 @@ export async function fetchFavoriteChats(userId: number) {
   const result = await db
     .select()
     .from(favoriteChats)
+    .leftJoin(chats, eq(favoriteChats.chatId, chats.chatId))
     .where(eq(favoriteChats.userId, userId))
     .orderBy(favoriteChats.createdAt)
-    .leftJoin(chats, eq(chats.chatId, favoriteChats.chatId)); // Fixed the typo (favoriteChat to favoriteChats)
 
-    return result.map((row) => ({
-  title: row.chats.title,
-  chatId: row.favoriteChats.chatId,
-}));
-
+  // Map result to return full chat info from `chats` table
+  return result
+    .filter(row => row.chats !== null) // optional: filter out any unmatched joins
+    .map(row => row.chats) // returns the full chat object
 }
+
 
 export async function fetchChat(chatId: string) {
     const chat = await db
@@ -87,6 +87,7 @@ export async function favoriteChat(userId: number, chatId: string, value: boolea
   }
 }
 
+
 // Function to Delete Chat
 export async function DeleteChat(userId: number, chatId: string) {
   // Step 1: Check if the chat exists for the user
@@ -113,6 +114,18 @@ export async function DeleteChat(userId: number, chatId: string) {
   // Step 4: Delete the chat itself
   await db.delete(chats).where(eq(chats.chatId, chatId));
 }
+
+// Toggle chat share status (private ↔ shareable)
+export async function toggleShare( userId: number, chatId: string, isShareable: boolean) {
+  const result = await db
+    .update(chats)
+    .set({ isShareable: isShareable })
+    .where(eq(chats.userId, userId))
+    .where(eq(chats.chatId, chatId));
+
+  return result;
+}
+
 
 
 

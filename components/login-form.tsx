@@ -17,7 +17,7 @@ import {
 } from "@/components/ui/form"
 import { loginSchema } from "@/lib/zod/schema"
 import { useState } from "react"
-import { signIn, useSession } from "next-auth/react" // ✅ use this
+import { signIn } from "next-auth/react" // ✅ use this
 import { useRouter } from "next/navigation"
 import { toast } from "sonner"
 
@@ -28,8 +28,7 @@ export function LoginForm({
 }: React.ComponentProps<"form">) {
 
   const [loading, setLoading] = useState(false)
-  const router = useRouter()
-  const { data: session } = useSession();
+  const router = useRouter();
 
   const form = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
@@ -55,7 +54,7 @@ export function LoginForm({
     if (result?.error) {
       if (result.error === 'CredentialsSignin') {
         toast.warning("Oops!", {
-          description: "We couldn’t log you in. Double-check your email and password.",
+          description: "We couldn't log you in. Double-check your email and password.",
           richColors: true,
         });
         

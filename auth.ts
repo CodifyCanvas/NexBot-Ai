@@ -2,7 +2,7 @@
 import NextAuth from 'next-auth';
 import Credentials from 'next-auth/providers/credentials';
 import { z } from 'zod';
-import { fetchUserForLogin } from './lib/data/user';
+import { fetchUserForLogin } from './lib/actions/user';
 
 export type UserLogin = {
   id: string;

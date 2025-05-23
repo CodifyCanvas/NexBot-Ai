@@ -1,8 +1,10 @@
+// app/components/nav-chats.tsx
 "use client"
 
 import {
   ArrowUpRight,
   Link as LinkIcon,
+  Loader2,
   MoreHorizontal,
   Star,
   StarOff,
@@ -30,20 +32,16 @@ import {
 import Link from "next/link"
 import { toast } from "sonner"
 import { refreshChats } from "@/lib/chat-refresh"
+import ShareChat from "./custom/ShareChat"
+import { Chat } from "@/lib/definations"
 
 interface NavChatProps {
-  chats: {
-    title: string
-    chatId: string
-  }[]
+  chats: Chat[]
   label: string
-  favorites?: {
-    title: string
-    chatId: string
-  }[] // ✅ fixed: should be an array
+  favorites?: Chat[]
 }
 
-export function NavChat({ chats, label, favorites = [] }: NavChatProps) {
+export function NavChat({ chats, label, favorites = []}: NavChatProps) {
   const { isMobile } = useSidebar()
 
   const isChatFavorited = (chatId: string) =>
@@ -98,9 +96,6 @@ export function NavChat({ chats, label, favorites = [] }: NavChatProps) {
   }
 }
 
-
-
-
   return (
     <SidebarGroup className="group-data-[collapsible=icon]:hidden">
       <SidebarGroupLabel className="flex flex-row justify-between">
@@ -152,6 +147,12 @@ export function NavChat({ chats, label, favorites = [] }: NavChatProps) {
                     )
                   )}
 
+                  <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                    <ShareChat chatId={item.chatId} isShareable={item.isShareable}/>
+                  </DropdownMenuItem>
+
+                  <DropdownMenuSeparator />
+                  
                   <DropdownMenuItem
                     onClick={() => {
                       const chatUrl = `${window.location.origin}/chat/${item.chatId}`
