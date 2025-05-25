@@ -12,6 +12,7 @@ import {
   AlertDialogAction
 } from "@/components/ui/alert-dialog";
 import Image from 'next/image';
+import { Loader2 } from 'lucide-react';
 
 type ConfirmationDialog = {
   title?: string;
@@ -25,15 +26,23 @@ type ConfirmationDialog = {
 
 const ConfirmationDialog: React.FC<ConfirmationDialog> = ({ title, description, confirmButtonLabel = "Yes", cancelButtonLabel = "No", confirmButtonClassName, children, onConfirm, }) => {
   const [isOpen, setIsOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-  const handleConfirm = () => {
-    onConfirm();
-    setIsOpen(false);
+  const handleConfirm = async () => {
+    try {
+      setLoading(true)
+      await onConfirm();
+      setIsOpen(false);
+    } catch (err) {
+      console.log(`Error: `, err)
+    } finally {
+      setLoading(false)
+    }
   };
 
   return (
     <AlertDialog open={isOpen} onOpenChange={setIsOpen}>
-      <AlertDialogTrigger>{children}</AlertDialogTrigger>
+      <AlertDialogTrigger className='w-full'>{children}</AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogDescription className='flex flex-row items-center gap-2'>
@@ -47,7 +56,14 @@ const ConfirmationDialog: React.FC<ConfirmationDialog> = ({ title, description, 
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel className="cursor-pointer" onClick={() => setIsOpen(false)}>{cancelButtonLabel}</AlertDialogCancel>
-          <AlertDialogAction className={`${confirmButtonClassName}`} onClick={handleConfirm}>{confirmButtonLabel}</AlertDialogAction>
+          <AlertDialogAction className={`${confirmButtonClassName}`} onClick={handleConfirm} disabled={loading}>{loading ? (
+              <div className="flex items-center gap-2">
+                <Loader2 className="animate-spin h-4 w-4" />
+                Processing...
+              </div>
+            ) : (
+              confirmButtonLabel
+            )}</AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>

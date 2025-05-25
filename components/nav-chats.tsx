@@ -1,10 +1,10 @@
-// app/components/nav-chats.tsx
 "use client"
 
 import {
   ArrowUpRight,
+  CircleX,
+  Link2,
   Link as LinkIcon,
-  Loader2,
   MoreHorizontal,
   Star,
   StarOff,
@@ -33,102 +33,143 @@ import Link from "next/link"
 import { toast } from "sonner"
 import { refreshChats } from "@/lib/chat-refresh"
 import ShareChat from "./custom/ShareChat"
+import ConfirmationDialog from "./custom/AlertDialog"
 import { Chat } from "@/lib/definations"
 
 interface NavChatProps {
   chats: Chat[]
   label: string
-  favorites?: Chat[]
+  favoriteList?: Chat[]
 }
 
-export function NavChat({ chats, label, favorites = []}: NavChatProps) {
+export function NavChat({ chats, label, favoriteList = [] }: NavChatProps) {
   const { isMobile } = useSidebar()
 
-  const isChatFavorited = (chatId: string) =>
-    favorites?.some(fav => fav.chatId === chatId)
+  const isInFavorites = (chatId: string) =>
+    favoriteList.some(chat => chat.chatId === chatId)
+  
 
-  async function toggleFavorite(chatId: string, value: boolean) {
+  const handleFavoriteToggle = async (chatId: string, add: boolean) => {
     try {
       const res = await fetch(`/api/chat/${chatId}/favorite`, {
         method: "POST",
-        body: JSON.stringify({ value }),
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ value: add }),
       })
 
       const result = await res.json()
 
       if (res.ok) {
-        toast.success(result.message, { richColors: true })
+        toast.success(result.message, {
+          richColors: true,
+          position: "top-center",
+          icon: <Star size={17} />,
+        })
         refreshChats()
       } else {
-        toast.error(result.error || "Failed to update favorites", {
+        toast.error(result.error || "Could not update favorites", {
+          richColors: true,
+          icon: <Star size={17} />,
+        })
+      }
+    } catch (error) {
+      console.error("Favorite update failed:", error)
+      toast.error("Something went wrong", {
+        richColors: true,
+        icon: <Star size={17} />,
+      })
+    }
+  }
+
+  const handleDelete = async (chatId: string) => {
+    try {
+      const res = await fetch(`/api/chat/${chatId}`, {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+      })
+
+      const result = await res.json()
+
+      if (res.ok) {
+        toast.success("Chat deleted", {
+          richColors: true,
+          position: "top-center",
+        })
+        refreshChats()
+      } else {
+        toast.error(result.message || "Failed to delete chat", {
           richColors: true,
         })
       }
     } catch (error) {
-      console.error("Favorite toggle failed", error)
+      console.error("Chat delete failed:", error)
       toast.error("Something went wrong", { richColors: true })
     }
   }
 
-  async function onDelete(chatId: string) {
-  try {
-    const res = await fetch(`/api/chat/${chatId}`, {
-      method: "DELETE",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-
-    const data = await res.json();
-
-    if (res.ok) {
-      toast.success("Chat removed", { richColors: true });
-      refreshChats();
-    } else {
-      toast.error(data.message || "Couldn't delete chat", { richColors: true });
+  const handleCopyLink = async (chatId: string) => {
+    const url = `${window.location.origin}/chat/${chatId}`
+    try {
+      await navigator.clipboard.writeText(url)
+      toast.success("Link copied!", {
+        richColors: true,
+        position: "top-center",
+        icon: <Link2 size={20} />,
+      })
+    } catch (error) {
+      console.error("Copy failed:", error)
+      toast.error("Failed to copy link", {
+        richColors: true,
+        position: "top-center",
+        icon: <Link2 size={20} />,
+      })
     }
-  } catch (err) {
-    console.error("Delete Chat failed:", err);
-    toast.error("Something broke", { richColors: true });
   }
-}
+
+            // console.log(`${label} : `, chats)
+
 
   return (
     <SidebarGroup className="group-data-[collapsible=icon]:hidden">
-      <SidebarGroupLabel className="flex flex-row justify-between">
+      <SidebarGroupLabel className="flex justify-between">
         <span>{label}</span>
         <span>{chats.length > 99 ? "99+" : chats.length}</span>
       </SidebarGroupLabel>
-      <SidebarMenu>
-        {chats.map((item, index) => {
-          const isFavorite = isChatFavorited(item.chatId)
 
-          return (
-            <SidebarMenuItem key={index}>
-              <SidebarMenuButton asChild>
-                <Link href={`/chat/${item.chatId}`}>
-                  <span className="pl-2">{item.title}</span>
-                </Link>
-              </SidebarMenuButton>
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <SidebarMenuAction showOnHover>
-                    <MoreHorizontal />
-                    <span className="sr-only">More</span>
-                  </SidebarMenuAction>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent
-                  className="w-56 rounded-lg"
-                  side={isMobile ? "bottom" : "right"}
-                  align={isMobile ? "end" : "start"}
-                >
-                  {/* Only show remove if it's in Favorites list */}
-                  {label === "Favorites" ? (
+      <SidebarMenu>
+        {chats.length > 0 ? (
+          chats.map((chat, idx) => {
+            const isFavorite = isInFavorites(chat.chatId)
+
+  console.log("chatId:", chat.chatId)
+  console.log("favoriteList IDs:", favoriteList.map(fav => fav.chatId))
+  console.log("isFavorite:", isFavorite)
+
+            return (
+              <SidebarMenuItem key={idx}>
+                <SidebarMenuButton asChild>
+                  <Link href={`/chat/${chat.chatId}`}>
+                    <span className="pl-2">{chat.title}</span>
+                  </Link>
+                </SidebarMenuButton>
+
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <SidebarMenuAction showOnHover>
+                      <MoreHorizontal />
+                      <span className="sr-only">More options</span>
+                    </SidebarMenuAction>
+                  </DropdownMenuTrigger>
+
+                  <DropdownMenuContent
+                    className="w-56 rounded-lg"
+                    side={isMobile ? "bottom" : "right"}
+                    align={isMobile ? "end" : "start"}
+                  >
+                    {/* Favorites logic */}
+                    {label === "Favorites" ? (
                     <>
-                      <DropdownMenuItem onClick={() => toggleFavorite(item.chatId, false)}>
+                      <DropdownMenuItem onClick={() => handleFavoriteToggle(chat.chatId, false)}>
                         <StarOff className="text-muted-foreground" />
                         <span>Remove from Favorites</span>
                       </DropdownMenuItem>
@@ -138,7 +179,7 @@ export function NavChat({ chats, label, favorites = []}: NavChatProps) {
                     // Only show "Add to Favorites" if not already favorited
                     !isFavorite && (
                       <>
-                        <DropdownMenuItem onClick={() => toggleFavorite(item.chatId, true)}>
+                        <DropdownMenuItem onClick={() => handleFavoriteToggle(chat.chatId, true)}>
                           <Star className="text-muted-foreground" />
                           <span>Add to Favorites</span>
                         </DropdownMenuItem>
@@ -147,52 +188,58 @@ export function NavChat({ chats, label, favorites = []}: NavChatProps) {
                     )
                   )}
 
-                  <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-                    <ShareChat chatId={item.chatId} isShareable={item.isShareable}/>
-                  </DropdownMenuItem>
-
-                  <DropdownMenuSeparator />
-                  
-                  <DropdownMenuItem
-                    onClick={() => {
-                      const chatUrl = `${window.location.origin}/chat/${item.chatId}`
-                      navigator.clipboard
-                        .writeText(chatUrl)
-                        .then(() => {
-                          toast.success("Link copied!", { richColors: true })
-                        })
-                        .catch((err) => {
-                          console.error("Failed to copy link:", err)
-                          toast.error("Couldn't copy link. Try again!", { richColors: true })
-                        })
-                    }}
-                  >
-                    <LinkIcon className="text-muted-foreground" />
-                    <span>Copy Link</span>
-                  </DropdownMenuItem>
-
-                  <Link
-                    href={`/chat/${item.chatId}`}
-                    target="_blank"
-                    className="w-full flex-1 align-middle gap-2"
-                  >
-                    <DropdownMenuItem>
-                      <ArrowUpRight className="text-muted-foreground" />
-                      <span>Open in New Tab</span>
+                    {/* Share Chat */}
+                    <DropdownMenuItem onSelect={e => e.preventDefault()}>
+                      <ShareChat chatId={chat.chatId} isShareable={chat.isShareable} />
                     </DropdownMenuItem>
-                  </Link>
 
-                  <DropdownMenuSeparator />
+                    <DropdownMenuSeparator />
 
-                  <DropdownMenuItem onClick={() => onDelete(item.chatId)}>
-                    <Trash2 className="text-muted-foreground" />
-                    <span>Delete</span>
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </SidebarMenuItem>
-          )
-        })}
+                    {/* Copy link */}
+                    <DropdownMenuItem onClick={() => handleCopyLink(chat.chatId)}>
+                      <LinkIcon className="text-muted-foreground" />
+                      <span>Copy Link</span>
+                    </DropdownMenuItem>
+
+                    {/* Open in new tab */}
+                    <Link href={`/chat/${chat.chatId}`} target="_blank" className="w-full">
+                      <DropdownMenuItem>
+                        <ArrowUpRight className="text-muted-foreground" />
+                        <span>Open in New Tab</span>
+                      </DropdownMenuItem>
+                    </Link>
+
+                    <DropdownMenuSeparator />
+
+                    {/* Delete */}
+                    <DropdownMenuItem onSelect={e => e.preventDefault()} className="w-full">
+                      <ConfirmationDialog
+                        onConfirm={() => handleDelete(chat.chatId)}
+                        title="Delete Chat"
+                        description="This action is permanent. Are you sure?"
+                        confirmButtonLabel="Yes, Delete"
+                        confirmButtonClassName="danger_button"
+                      >
+                        <div className="flex items-center gap-2">
+                          <Trash2 className="text-muted-foreground" />
+                          <span>Delete</span>
+                        </div>
+                      </ConfirmationDialog>
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </SidebarMenuItem>
+            )
+          })
+        ) : (
+          <div className="flex flex-col items-center justify-center px-4 py-12 text-center text-muted-foreground">
+            <CircleX size={48} className="text-gray-400" />
+            <p className="mt-2 text-sm font-medium">No chats found</p>
+            <span className="text-xs text-gray-500">
+              Start a new conversation to see it here.
+            </span>
+          </div>
+        )}
       </SidebarMenu>
     </SidebarGroup>
   )
