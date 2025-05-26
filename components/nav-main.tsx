@@ -6,8 +6,8 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { usePathname, useRouter } from "next/navigation";
-import { useCallback } from "react";
+import { usePathname } from "next/navigation";
+import Link from "next/link";
 
 type NavItem = {
   title: string;
@@ -20,17 +20,7 @@ interface NavMainProps {
 }
 
 export function NavMain({ items }: NavMainProps) {
-  const router = useRouter();
   const pathname = usePathname();
-
-  const handleNavigation = useCallback(
-    (url: string) => {
-      if (url !== pathname) {
-        router.push(url);
-      }
-    },
-    [pathname, router]
-  );
 
   return (
     <SidebarMenu>
@@ -38,12 +28,14 @@ export function NavMain({ items }: NavMainProps) {
 
         return (
           <SidebarMenuItem key={title}>
+            <Link href={url}>
             <SidebarMenuButton asChild isActive={pathname === url}>
-              <button onClick={() => handleNavigation(url)}>
+              <button>
                 <Icon />
                 <span>{title}</span>
               </button>
             </SidebarMenuButton>
+            </Link>
           </SidebarMenuItem>
         );
       })}

@@ -1,9 +1,34 @@
 // app/api/chat/route.ts
 import { NextRequest, NextResponse } from 'next/server';
-import { createNewChat } from '@/lib/actions/chat';
+import { createNewChat, getUserChatsSearch } from '@/lib/actions/chat';
 import { auth } from '@/auth';
 import { generateChatId } from '@/lib/uuid';
 import { generateGeminiResponse } from '@/lib/gemini/gemini';
+
+export async function GET(req: Request) {
+  const session = await auth();
+
+  if (!session?.user?.id) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
+  const userId = Number(session.user.id);
+  const { searchParams } = new URL(req.url);
+  const query = searchParams.get('query')?.toLowerCase() || '';
+
+  try {
+    const chats = await getUserChatsSearch(userId, query);
+
+    return new Response(JSON.stringify(chats), {
+      headers: { 'Content-Type': 'application/json' },
+    });
+  } catch (error) {
+    console.error('Failed to fetch chats:', error);
+    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+  }
+}
+
+
 
 export async function POST(req: NextRequest) {
   try {

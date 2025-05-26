@@ -39,23 +39,27 @@ export default function ChatRoutePage() {
           // 🔔 Toast Warnings Based on Status
           switch (res.status) {
             case 404:
-              toast.warning('Unable to load conversation', {
-                richColors: true
+              toast.warning('📭 Conversation not found.', {
+                richColors: true,
               });
+              console.warn('Fetch error [404]:', data.error);
               break;
+
             case 403:
-              toast.warning('🔒 This conversation is private', {
-                richColors: true
+              toast.warning('🔒 This conversation is private.', {
+                richColors: true,
               });
+              console.warn('Fetch error [403]: Access denied to private conversation.');
               break;
+
             case 500:
             default:
-              toast.error('❌ Something went wrong', {
-                richColors: true
+              toast.error('❌ Something went wrong. Please try again later.', {
+                richColors: true,
               });
+              console.error(`Fetch error [${res.status}]:`, data.error);
               break;
           }
-          console.error('Message fetch error:', data.error);
           router.push('/chat')
 
         }

@@ -17,3 +17,11 @@ export interface User {
   verified: boolean;
   createdAt: Date; // or string, depending on how it's returned from your DB/ORM
 }
+
+export type ChatResult = {
+  chatId: string;
+  chatTitle: string;
+  createdAt: Date | string;
+  favorite: boolean;
+  message: string | null;
+};

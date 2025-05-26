@@ -1,7 +1,8 @@
 "use server";
 import { chats, favoriteChats, messages } from "@/drizzle/schema";
 import { db } from "@/lib/db";
-import { and, desc, eq } from 'drizzle-orm';
+import { and, desc, eq, or, sql } from 'drizzle-orm';
+import { ChatResult } from "../definations";
 
 export async function createNewChat(userId: number, chatId: string, title: string) {
   await db.insert(chats).values({
@@ -126,6 +127,45 @@ export async function toggleShare( userId: number, chatId: string, isShareable: 
   return result;
 }
 
+export async function getUserChatsSearch(userId: number, query: string): Promise<ChatResult[]> {
+  const results = await db
+    .select({
+      chatId: chats.chatId,
+      chatTitle: chats.title,
+      createdAt: chats.createdAt,
+      favorite: sql<boolean>`IF(${favoriteChats.chatId} IS NOT NULL, true, false)`.as('favorite'),
+      message: sql<string | null>`(
+  SELECT m.message FROM ${messages} m
+  WHERE m.chat_id = ${chats.chatId}
+  ORDER BY m.created_at DESC
+  LIMIT 1
+)`.as('message'),
+    })
+    .from(chats)
+    .leftJoin(
+      favoriteChats,
+      and(
+        eq(favoriteChats.chatId, chats.chatId),
+        eq(favoriteChats.userId, userId)
+      )
+    )
+    .where(
+      and(
+        eq(chats.userId, userId),
+        or(
+          sql`LOWER(${chats.title}) LIKE ${`%${query.toLowerCase()}%`}`,
+          sql`EXISTS (
+            SELECT 1 FROM ${messages}
+            WHERE ${messages.chatId} = ${chats.chatId}
+            AND LOWER(${messages.message}) LIKE ${`%${query.toLowerCase()}%`}
+          )`
+        )
+      )
+    )
+    .orderBy(desc(chats.createdAt));
+
+  return results;
+}
 
 
 
