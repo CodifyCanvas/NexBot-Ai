@@ -16,7 +16,6 @@ import {
   SidebarRail,
 } from "@/components/ui/sidebar"
 import Chats from "./custom/Chats"
-import { refreshChats } from "@/lib/chat-refresh"
 
 // This is sample data.
 const data = {

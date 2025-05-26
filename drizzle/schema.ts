@@ -9,6 +9,7 @@ export const users = mysqlTable('users', {
   email: varchar('email', { length: 255 }).notNull().unique(),
   password: varchar('password', { length: 255 }).notNull(),
   admin: boolean('admin').notNull().default(false), // ✅ boolean type with default
+  verified: boolean('verified').notNull().default(false), // ✅ boolean type with default
   createdAt: datetime('created_at').default(sql`CURRENT_TIMESTAMP`).notNull(),
 })
 

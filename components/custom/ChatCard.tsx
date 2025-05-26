@@ -4,6 +4,9 @@ import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 import ReactMarkdown from 'react-markdown';
 import rehypeSanitize from 'rehype-sanitize';
 import remarkGfm from 'remark-gfm'; // Optional but recommended
+import { User } from '@/lib/definations';
+import useUser from '@/hooks/useUser';
+import { getColorByLetter } from '@/lib/utils';
 
 interface ChatProp {
   message: string;
@@ -15,16 +18,8 @@ interface ChatCardProps {
 }
 
 const ChatCard: React.FC<ChatCardProps> = ({ chat }) => {
-  const [user, setUser] = React.useState({ profileImg: '' });
 
-  React.useEffect(() => {
-    const loadUser = async () => {
-      const res = await fetch('/api/user');
-      const data = await res.json();
-      setUser(data.user);
-    };
-    loadUser();
-  }, []);
+  const { user } = useUser();
 
   return (
     <div className="w-full space-y-5 mt-10">
@@ -38,11 +33,11 @@ const ChatCard: React.FC<ChatCardProps> = ({ chat }) => {
           >
             <Avatar className="mt-1">
               <AvatarImage
-                src={isUser ? user.profileImg : '/assets/images/main_logo.png'}
+                src={isUser ? user?.profileImg : '/assets/images/main_logo.png'}
                 alt="avatar"
               />
-              <AvatarFallback>
-                {chatItem.sender.charAt(0).toUpperCase()}
+              <AvatarFallback className={user?.name ? getColorByLetter(user?.name) : getColorByLetter(chatItem.sender) }>
+                {user?.name ? user?.name.charAt(0).toUpperCase() : chatItem.sender.charAt(0).toUpperCase() }
               </AvatarFallback>
             </Avatar>
 

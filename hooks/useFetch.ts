@@ -1,3 +1,4 @@
+"use client"
 import { useEffect, useState } from "react";
 
 const useFetch = <T>(fetchFunction: () => Promise<T>, autoFetch: true) => {

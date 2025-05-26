@@ -126,9 +126,6 @@ export function NavChat({ chats, label, favoriteList = [] }: NavChatProps) {
     }
   }
 
-            // console.log(`${label} : `, chats)
-
-
   return (
     <SidebarGroup className="group-data-[collapsible=icon]:hidden">
       <SidebarGroupLabel className="flex justify-between">
@@ -140,10 +137,6 @@ export function NavChat({ chats, label, favoriteList = [] }: NavChatProps) {
         {chats.length > 0 ? (
           chats.map((chat, idx) => {
             const isFavorite = isInFavorites(chat.chatId)
-
-  console.log("chatId:", chat.chatId)
-  console.log("favoriteList IDs:", favoriteList.map(fav => fav.chatId))
-  console.log("isFavorite:", isFavorite)
 
             return (
               <SidebarMenuItem key={idx}>

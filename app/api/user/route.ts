@@ -20,7 +20,7 @@ export async function GET(req: NextRequest) {
     }
 
     // Now returning the chats directly
-    return NextResponse.json({ user }, { status: 200 });
+    return NextResponse.json(user, { status: 200 });
   } catch (err) {
     console.error('Error fetching User:', err);
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });

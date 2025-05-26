@@ -1,20 +1,22 @@
-"use client";
+'use client';
 
-import * as React from "react";
-import { useParams } from "next/navigation";
+import * as React from 'react';
+import { useParams } from 'next/navigation';
 import {
   Link,
+  Link2,
   LogOut,
   Star,
   Trash,
   UserRound,
-} from "lucide-react";
+} from 'lucide-react';
 
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/components/ui/popover";
+} from '@/components/ui/popover';
+
 import {
   Sidebar,
   SidebarContent,
@@ -23,70 +25,78 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-} from "@/components/ui/sidebar";
+} from '@/components/ui/sidebar';
 
-import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
-import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
-import ConfirmationDialog from "./custom/AlertDialog";
-import { handleSignOut } from "@/app/login/authActions";
-import { cn, getColorByLetter } from "@/lib/utils";
-import { refreshChats } from "@/lib/chat-refresh";
+import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
+import { Tooltip, TooltipContent, TooltipTrigger } from './ui/tooltip';
+import ConfirmationDialog from './custom/AlertDialog';
+import { handleSignOut } from '@/app/login/authActions';
+import { cn, getColorByLetter } from '@/lib/utils';
+import { refreshChats } from '@/lib/chat-refresh';
+import { Chat } from '@/lib/definations';
+import { toast } from 'sonner';
+import useUser from '@/hooks/useUser';
 
 export function NavActions() {
   const { chatId } = useParams() as { chatId?: string };
 
-  const [user, setUser] = React.useState({ name: "", profileImg: "", admin: false });
+  const { user, loading, error } = useUser();
+
   const [isFav, setIsFav] = React.useState(false);
-  const [chatDate, setChatDate] = React.useState("");
+  const [chatDate, setChatDate] = React.useState('');
   const [menuOpen, setMenuOpen] = React.useState(false);
 
-  // Load user
-  const loadUser = async () => {
-    const res = await fetch("/api/user");
-    const data = await res.json();
-    setUser(data.user);
-  };
-
-  // Load favorite status
   const loadFavStatus = async () => {
-    const res = await fetch("/api/chats/favorites", {
-          method: "GET",
-          headers: { "Content-Type": "application/json" }
-        });
+    const res = await fetch('/api/chats/favorites');
     const data = await res.json();
-    const favIds = (data || []).map((c: any) => c.chatId.toString());
+    const favIds = (data || []).map((c: Chat) => c.chatId.toString());
     setIsFav(chatId ? favIds.includes(chatId) : false);
   };
 
-  // Load chat metadata
   const loadChatDate = async () => {
-    const res = await fetch(`/api/chat/${chatId}`, {
-          method: "GET",
-          headers: { "Content-Type": "application/json" }
-        });
+    const res = await fetch(`/api/chat/${chatId}`);
     const data = await res.json();
-    setChatDate(data.createdAt || "");
+    setChatDate(data.createdAt || '');
   };
 
-  // Toggle favorite
   const toggleFav = async () => {
-    const newState = !isFav;
-    setIsFav(newState);
+  if (!chatId) return;
 
-    await fetch(`/api/chat/${chatId}/favorite`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
+  const newState = !isFav;
+  setIsFav(newState);
+
+  try {
+    const res = await fetch(`/api/chat/${chatId}/favorite`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ value: newState }),
     });
 
-    loadFavStatus(); // keep state fresh
-    refreshChats();
-  };
+    const result = await res.json();
 
-  // Load data on first render & chat change
-  React.useEffect(() => {
-    loadUser();
-  }, []);
+    if (res.ok) {
+      toast.success(result.message || 'Updated favorites', {
+        richColors: true,
+        position: 'top-center',
+        icon: <Star size={17} />,
+      });
+    } else {
+      toast.error(result.error || 'Could not update favorites', {
+        richColors: true,
+        icon: <Star size={17} />,
+      });
+    }
+
+    await loadFavStatus();
+    refreshChats();
+  } catch (error) {
+    console.error('Favorite update failed:', error);
+    toast.error('Something went wrong', {
+      richColors: true,
+      icon: <Star size={17} />,
+    });
+  }
+};
 
   React.useEffect(() => {
     if (chatId) {
@@ -94,6 +104,35 @@ export function NavActions() {
       loadChatDate();
     }
   }, [chatId]);
+
+  if (loading || !user) return null; // optional: add spinner
+  if (error) {
+    console.error(error);
+    return (
+      <div className="text-red-500 font-semibold animate-pulse">
+        Failed to load user info. Try again later.
+      </div>
+    );
+  }
+
+  const handleCopyLink = async (chatId: string) => {
+    const url = `${window.location.origin}/chat/${chatId}`
+    try {
+      await navigator.clipboard.writeText(url)
+      toast.success("Link copied!", {
+        richColors: true,
+        position: "top-center",
+        icon: <Link2 size={20} />,
+      })
+    } catch (error) {
+      console.error("Copy failed:", error)
+      toast.error("Failed to copy link", {
+        richColors: true,
+        position: "top-center",
+        icon: <Link2 size={20} />,
+      })
+    }
+  }
 
   return (
     <div className="flex items-center gap-2 text-sm">
@@ -103,11 +142,13 @@ export function NavActions() {
             <div className="text-muted-foreground hidden md:inline-block mr-1">
               <Tooltip>
                 <TooltipTrigger>
-                  {new Date(chatDate).toLocaleDateString("en-GB", {
-                    day: "2-digit",
-                    month: "short",
-                    year: "numeric",
-                  }).replace(/ /g, "-")}
+                  {new Date(chatDate)
+                    .toLocaleDateString('en-GB', {
+                      day: '2-digit',
+                      month: 'short',
+                      year: 'numeric',
+                    })
+                    .replace(/ /g, '-')}
                 </TooltipTrigger>
                 <TooltipContent>Chat creation date</TooltipContent>
               </Tooltip>
@@ -123,31 +164,29 @@ export function NavActions() {
               >
                 <Star
                   className={cn(
-                    "text-yellow-500",
-                    isFav ? "h-5 w-5 fill-yellow-300 animate-pulse" : "h-4 w-4 fill-none"
+                    'text-yellow-500',
+                    isFav
+                      ? 'h-5 w-5 fill-yellow-300 animate-pulse'
+                      : 'h-4 w-4 fill-none'
                   )}
                 />
               </div>
             </TooltipTrigger>
-            <TooltipContent>{isFav ? "Unfavorite" : "Favorite"}</TooltipContent>
+            <TooltipContent>{isFav ? 'Unfavorite' : 'Favorite'}</TooltipContent>
           </Tooltip>
         </>
       )}
 
-      {/* User Avatar and Popover Menu */}
       <Popover open={menuOpen} onOpenChange={setMenuOpen}>
         <PopoverTrigger asChild>
           <div
             role="button"
-            className={cn(
-              "h-8 w-8 rounded-full flex items-center justify-center cursor-pointer",
-              user.admin && "ring-3 ring-pink-700 ring-offset-1 p-2"
-            )}
+            className='h-8 w-8 rounded-full flex items-center justify-center cursor-pointer'
           >
             <Avatar>
               <AvatarImage src={user.profileImg} />
               <AvatarFallback className={getColorByLetter(user.name)}>
-                {user.name?.charAt(0).toUpperCase() || "S"}
+                {user.name ? user.name.charAt(0).toUpperCase() : 'S'}
               </AvatarFallback>
             </Avatar>
           </div>
@@ -167,43 +206,38 @@ export function NavActions() {
                   </SidebarMenu>
                 </SidebarGroupContent>
               </SidebarGroup>
-
+              {chatId && 
               <SidebarGroup className="-mt-2 border-b">
                 <SidebarGroupContent>
                   <SidebarMenu>
                     <SidebarMenuItem>
-                      <SidebarMenuButton>
+                      <SidebarMenuButton onClick={() => handleCopyLink(chatId)}>
                         <Link /> <span>Copy Link</span>
-                      </SidebarMenuButton>
-                    </SidebarMenuItem>
-                    <SidebarMenuItem>
-                      <SidebarMenuButton>
-                        <Trash /> <span>Delete Chat</span>
                       </SidebarMenuButton>
                     </SidebarMenuItem>
                   </SidebarMenu>
                 </SidebarGroupContent>
-              </SidebarGroup>
+              </SidebarGroup> }
+              <SidebarGroup className="-mt-2"> 
+  <SidebarGroupContent>
+    <SidebarMenu>
+      <SidebarMenuItem>
+        <ConfirmationDialog
+          title="Sign out?"
+          description="You will be signed out of your NexBot account."
+          confirmButtonLabel="Yes, Sign out"
+          onConfirm={handleSignOut}
+          confirmButtonClassName="danger_button"
+        >
+          <div className="w-full text-destructive flex items-center gap-1 cursor-pointer px-3 py-2 hover:bg-muted rounded-md text-sm">
+            <LogOut size={17}/> <span>Log out</span>
+          </div>
+        </ConfirmationDialog>
+      </SidebarMenuItem>
+    </SidebarMenu>
+  </SidebarGroupContent>
+</SidebarGroup>
 
-              <ConfirmationDialog
-                title="Sign out?"
-                description="You will be signed out of your NexBot account."
-                confirmButtonLabel="Yes, Sign out"
-                onConfirm={handleSignOut}
-                confirmButtonClassName="danger_button"
-              >
-                <SidebarGroup className="-mt-2">
-                  <SidebarGroupContent>
-                    <SidebarMenu>
-                      <SidebarMenuItem>
-                        <SidebarMenuButton className="text-destructive">
-                          <LogOut /> <span>Log out</span>
-                        </SidebarMenuButton>
-                      </SidebarMenuItem>
-                    </SidebarMenu>
-                  </SidebarGroupContent>
-                </SidebarGroup>
-              </ConfirmationDialog>
             </SidebarContent>
           </Sidebar>
         </PopoverContent>

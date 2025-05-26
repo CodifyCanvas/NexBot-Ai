@@ -14,7 +14,7 @@ export async function fetchUserForLogin(email: string, password: string) {
     const user = await db
       .select()
       .from(users)
-      .where(and(eq(users.email, email), eq(users.password, password)))
+      .where(and(eq(users.email, email), eq(users.password, password), eq(users.verified, true)))
       .limit(1);
 
     return user.length > 0 ? user[0] : null;
@@ -32,6 +32,7 @@ export async function fetchUser(userId: number) {
       name: users.name,
       admin: users.admin,
       email: users.email,
+      verified: users.verified,
       createdAt: users.createdAt,
     })
     .from(users)
