@@ -3,6 +3,7 @@ export interface Chat {
   userId: number
   chatId: string
   title: string
+  color?: number
   isShareable: boolean
   createdAt: string // or `Date` if you parse it
 }

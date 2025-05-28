@@ -4,11 +4,12 @@ import { db } from "@/lib/db";
 import { and, desc, eq, or, sql } from 'drizzle-orm';
 import { ChatResult } from "../definations";
 
-export async function createNewChat(userId: number, chatId: string, title: string) {
+export async function createNewChat(userId: number, chatId: string, title: string, color: number) {
   await db.insert(chats).values({
     userId: userId,
     chatId: chatId,
     title: title,
+    color: color,
   });
   return true;
 }

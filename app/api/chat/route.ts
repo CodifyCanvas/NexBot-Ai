@@ -4,6 +4,7 @@ import { createNewChat, getUserChatsSearch } from '@/lib/actions/chat';
 import { auth } from '@/auth';
 import { generateChatId } from '@/lib/uuid';
 import { generateGeminiResponse } from '@/lib/gemini/gemini';
+import { getRandomInt1to10 } from '@/lib/utils';
 
 export async function GET(req: Request) {
   const session = await auth();
@@ -42,6 +43,7 @@ export async function POST(req: NextRequest) {
 
     const userId = session.user.id;
     const newChatId = generateChatId();
+    const newColorCode = getRandomInt1to10();
 
     // Parse the incoming message from the request body
     const { message } = await req.json();
@@ -53,7 +55,7 @@ export async function POST(req: NextRequest) {
     const aiTitle = await generateGeminiResponse(message);
 
     // Create the new chat in the database
-    const result = await createNewChat(Number(userId), newChatId, aiTitle);
+    const result = await createNewChat(Number(userId), newChatId, aiTitle, newColorCode);
 
     if (!result) {
       return NextResponse.json({ error: 'Failed to create new chat' }, { status: 500 });

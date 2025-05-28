@@ -24,6 +24,7 @@ import {
   SidebarGroupLabel,
   SidebarMenu,
   SidebarMenuAction,
+  SidebarMenuBadge,
   SidebarMenuButton,
   SidebarMenuItem,
   useSidebar,
@@ -35,6 +36,8 @@ import { refreshChats } from "@/lib/chat-refresh"
 import ShareChat from "./custom/ShareChat"
 import ConfirmationDialog from "./custom/AlertDialog"
 import { Chat } from "@/lib/definations"
+import { cn, getBgColorClass } from "@/lib/utils"
+import { Separator } from "./ui/separator"
 
 interface NavChatProps {
   chats: Chat[]
@@ -139,9 +142,14 @@ export function NavChat({ chats, label, favoriteList = [] }: NavChatProps) {
             const isFavorite = isInFavorites(chat.chatId)
 
             return (
-              <SidebarMenuItem key={idx}>
-                <SidebarMenuButton asChild>
+              <SidebarMenuItem key={idx} >
+                <SidebarMenuButton asChild className="hover:bg-neutral-700/70">
                   <Link href={`/chat/${chat.chatId}`}>
+                  {/* <div className={cn(`w-1 min-h-full rounded-4xl ${getBgColorClass(chat?.color ? chat.color : 0)}`)} /> */}
+                  <Separator
+              orientation="vertical"
+              className={`data-[orientation=vertical]:h-full min-w-1 rounded-4xl ${getBgColorClass(chat?.color ? chat.color : 0)}`}
+            />
                     <span className="pl-2">{chat.title}</span>
                   </Link>
                 </SidebarMenuButton>

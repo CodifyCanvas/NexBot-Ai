@@ -55,7 +55,28 @@ export function formatBotMessage(rawMessage: string): string {
 }
 
 
-// export function formatBotMessage(markdown: string): string {
-//   return marked.parse(markdown);
-// }
+export function getRandomInt1to10() {
+  return Math.floor(Math.random() * 10) + 1;
+}
+
+export function getBgColorClass(n: number): string {
+  if (n < 1 || n > 10) return '';
+
+  const colors = {
+    1: "bg-red-500",
+    2: "bg-orange-500",
+    3: "bg-fuchsia-700",
+    4: "bg-yellow-500",
+    5: "bg-lime-500",
+    6: "bg-green-500",
+    7: "bg-emerald-500",
+    8: "bg-teal-500",
+    9: "bg-blue-500",
+    10: "bg-purple-500"
+  };
+
+  return colors[n] || '';
+}
+
+
 

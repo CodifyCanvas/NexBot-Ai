@@ -20,6 +20,7 @@ export const chats = mysqlTable('chats', {
   chatId: varchar('chat_id', { length: 255 }).notNull().unique(), // uuid from nodjs api
   title: varchar('title', { length: 255 }).notNull(), // New title field
   isShareable: boolean('is_shareable').notNull().default(false),
+  color: int('color').notNull().default(1),
   createdAt: datetime('created_at').default(sql`CURRENT_TIMESTAMP`).notNull(),
 });
 

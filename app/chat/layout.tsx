@@ -9,7 +9,6 @@ import {
   SidebarTrigger
 } from '@/components/ui/sidebar';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
-import { FavoriteChatsProvider } from '@/hooks/contexts/FavoriteChatsContext';
 import { Separator } from '@radix-ui/react-dropdown-menu';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -35,13 +34,11 @@ export default function ChatLayout({ children }: ChatLayoutProps) {
               <TooltipContent>Toggle Sidebar</TooltipContent>
             </Tooltip>
 
-
             <Separator
               orientation="vertical"
               className="mr-2 data-[orientation=vertical]:h-4"
             />
             <div className="flex justify-center gap-2 md:justify-start z-10">
-
               
                   <Link href="/chat" className="flex items-center gap-2 font-medium">
                     <div className="bg-none text-primary-foreground flex size-6 items-center justify-center rounded-md">
@@ -54,7 +51,6 @@ export default function ChatLayout({ children }: ChatLayoutProps) {
                     </div>
                     NexBot
                   </Link>
-                
 
             </div>
           </div>

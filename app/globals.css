@@ -104,8 +104,8 @@
   --chart-2: oklch(0.696 0.17 162.48);
   --chart-3: oklch(0.769 0.188 70.08);
   --chart-4: oklch(0.627 0.265 303.9);
-  --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: oklch(0.21 0.006 285.885);
+  --chart-5: oklch(0.645 0.246 16.439); 
+  --sidebar: oklch(0.00% 0.000 0);
   --sidebar-foreground: oklch(0.985 0 0);
   --sidebar-primary: oklch(0.488 0.243 264.376);
   --sidebar-primary-foreground: oklch(0.985 0 0);
@@ -137,6 +137,7 @@
       var(--color-peach) 0%,
       var(--color-purple) 100%);
 }
+
 
 .gradient-border {
   border: 1px solid transparent;
@@ -174,4 +175,21 @@
 /* chat input shadow */
 .chat_input_shadow {
   box-shadow: -0px -15px 35px 10px rgba(0, 0, 0, 0.7);
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px; /* make scrollbar thinner */
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background-color: rgba(100, 100, 100, 0.4); /* customize color */
+  border-radius: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(100, 100, 100, 0.6);
 }

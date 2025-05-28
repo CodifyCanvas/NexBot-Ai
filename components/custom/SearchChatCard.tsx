@@ -49,17 +49,17 @@ const SearchChatCard: React.FC<SearchChatCardProps> = ({ searchChats }) => {
   return (
     <>
       {Object.entries(groupedChats).map(([date, chats]) => (
-        <div key={date} className="mb-4">
+        <div key={date} className="p-0 scale-80 sm:scale-100">
           <div className="text-sm text-gray-400 font-medium px-3 mb-1">{date}</div>
           {chats.map((chat) => (
             <Link
               href={`/chat/${chat.chatId}`}
               key={chat.chatId}
-              className="flex flex-row gap-2 py-2 px-3 rounded-md hover:bg-neutral-700 cursor-pointer no-underline"
+              className="flex flex-row gap-2 px-0 sm:px-3 py-2 rounded-md hover:bg-neutral-700/70 cursor-pointer no-underline"
             >
               {/* Colored indicator bar */}
               <div className="w-1 min-h-full rounded-4xl gradient" />
-
+ 
               {/* Main content */}
               <div className="flex flex-row items-center justify-between w-full">
                 <div className="flex flex-col gap-0.5 overflow-hidden flex-1">

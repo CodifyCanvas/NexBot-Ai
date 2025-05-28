@@ -42,14 +42,14 @@ const data = {
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
-    <Sidebar className="border-r-1 border-white/25" {...props}>
-      <SidebarHeader>
+    <Sidebar className="flex flex-col gap-2" variant="floating" {...props} >
+      <SidebarHeader className="bg-neutral-900 md:bg-neutral-800/70 md:rounded-md md:mb-2">
         <NavMain items={data.navMain} />
       </SidebarHeader>
-      <SidebarContent>
+      <SidebarContent className="bg-neutral-900 md:bg-neutral-800/70 md:rounded-md md:mb-2 custom-scrollbar">
         <Chats />
       </SidebarContent>
-      <NavSecondary items={data.navSecondary} className="mt-auto" />
+      <NavSecondary items={data.navSecondary} className="bg-neutral-900 md:bg-neutral-800/70 md:rounded-md mt-auto" />
       <SidebarRail />
     </Sidebar>
   )
