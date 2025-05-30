@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import Image from 'next/image';
 import { Loader2 } from 'lucide-react';
+import { Images, Names } from '@/constants/constants';
 
 type ConfirmationDialog = {
   title?: string;
@@ -43,11 +44,11 @@ const ConfirmationDialog: React.FC<ConfirmationDialog> = ({ title, description, 
   return (
     <AlertDialog open={isOpen} onOpenChange={setIsOpen}>
       <AlertDialogTrigger className='w-full'>{children}</AlertDialogTrigger>
-      <AlertDialogContent>
+      <AlertDialogContent className='isolate bg-white/10 backdrop-blur-xl shadow-lg md:outline-1 outline-white/20 border dark:border-none border-black/10'>
         <AlertDialogHeader>
           <AlertDialogDescription className='flex flex-row items-center gap-2'>
-            <Image src='/assets/images/main_logo_transparent.png' alt="logo" width={16} height={16} />
-            NexBot
+            <Image src={Images.main_logo_transparent} alt="logo" width={16} height={16} />
+            {Names.app_name}
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogHeader>

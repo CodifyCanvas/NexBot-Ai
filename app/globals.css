@@ -132,23 +132,14 @@
   @apply bg-red-500 hover:bg-red-700 cursor-pointer text-white;
 }
 
-.gradient {
-  background: linear-gradient(90deg,
-      var(--color-peach) 0%,
-      var(--color-purple) 100%);
+
+.radial-center-gradient-bg-light {
+  background: radial-gradient(circle at top, #f5fbff 20%,#e5f3fd 100%);
+}
+.radial-center-gradient-bg-dark {
+  background: radial-gradient(circle at top, #0f172a 20%, #020617 100%);
 }
 
-
-.gradient-border {
-  border: 1px solid transparent;
-  background-image: linear-gradient(45deg, var(--color-purple), var(--color-peach));
-  background-clip: padding-box;
-}
-
-.background {
-  background: #000;
-  background: linear-gradient(121deg, rgba(0, 0, 0, 1) 0%, rgba(194, 110, 115, 1) 50%, rgba(172, 30, 214, undefined) 100%);
-}
 
 
 /* Scroll Bar for Input Field */

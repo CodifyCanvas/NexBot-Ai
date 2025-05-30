@@ -9,10 +9,13 @@ import {
   SidebarTrigger
 } from '@/components/ui/sidebar';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import { Images, Names } from '@/constants/constants';
+import { cn } from '@/lib/utils';
 import { Separator } from '@radix-ui/react-dropdown-menu';
+import { useTheme } from 'next-themes';
 import Image from 'next/image';
 import Link from 'next/link';
-import { ReactNode } from 'react';
+import { ReactNode, useEffect, useState } from 'react';
 
 interface ChatLayoutProps {
   children: ReactNode;
@@ -20,52 +23,65 @@ interface ChatLayoutProps {
 
 export default function ChatLayout({ children }: ChatLayoutProps) {
 
+  const { theme } = useTheme()
+
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   return (
-    <SidebarProvider>
+    <SidebarProvider className="relative min-h-screen">
+      {/* 🌈 Gradient Background */}
+      {!mounted && (
+        <div className="fixed inset-0 -z-10 bg-slate-950" />
+      )}
+      {mounted && (
+        <div className={cn(
+          "fixed inset-0 -z-10",
+          theme === 'dark' ? 'radial-center-gradient-bg-dark' : 'radial-center-gradient-bg-light'
+        )} />
+      )}
+
+      {/* <div className="fixed inset-0 -z-10 bg-gradient-to-br from-yellow-300 via-green-400 to-blue-500" /> */}
+
+      {/* Sidebar + Content */}
       <AppSidebar />
-      <SidebarInset>
-
-        <header className="flex h-14 shrink-0 items-center gap-2 border-white/25 border-b-1">
-          <div className="flex flex-1 items-center gap-2 px-3">
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <SidebarTrigger />
-              </TooltipTrigger>
-              <TooltipContent>Toggle Sidebar</TooltipContent>
-            </Tooltip>
-
-            <Separator
-              orientation="vertical"
-              className="mr-2 data-[orientation=vertical]:h-4"
-            />
-            <div className="flex justify-center gap-2 md:justify-start z-10">
-              
-                  <Link href="/chat" className="flex items-center gap-2 font-medium">
-                    <div className="bg-none text-primary-foreground flex size-6 items-center justify-center rounded-md">
-                      <Image
-                        src="/assets/images/main_logo_transparent.png"
-                        alt="main Logo"
-                        width={20}
-                        height={20}
-                      />
-                    </div>
-                    NexBot
-                  </Link>
-
-            </div>
+      <SidebarInset className='bg-transparent'>
+        <header className="flex h-14 items-center gap-2 border-b dark:border-white/25 border-black/15 px-3">
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <SidebarTrigger />
+            </TooltipTrigger>
+            <TooltipContent>Toggle Sidebar</TooltipContent>
+          </Tooltip>
+          <Separator orientation="vertical" className="mr-2 h-4" />
+          <div className="flex items-center gap-2 z-10">
+            <Link href="/chat" className="flex items-center gap-2 font-medium">
+              <div className="flex size-6 items-center justify-center rounded-md">
+                <Image
+                  src={Images.main_logo_transparent}
+                  alt="main Logo"
+                  width={20}
+                  height={20}
+                />
+              </div>
+              {Names.app_name}
+            </Link>
           </div>
-          <div className="ml-auto px-3">
+
+          <div className="ml-auto">
             <NavActions />
           </div>
         </header>
 
-        {/* Main content area */}
-        <div className="flex flex-1 flex-col gap-4 relative">
-          <div className="mx-auto h-full w-full rounded-lg">
-            {children}
-          </div>
+        <div className="flex-1 flex flex-col">
+          {children}
         </div>
       </SidebarInset>
     </SidebarProvider>
   );
 }
+
+

@@ -1,34 +1,27 @@
+// LoginPage.tsx
+
 import { LoginForm } from "@/components/login-form";
 import { Metadata } from "next";
 import Image from "next/image";
-import LoginVideo from "@/components/custom/LoginVideo";
+import { Images, Names } from "@/constants/constants";
 
 export const metadata: Metadata = {
-  title: "NexBot | Login",
+  title: "NexBot - Login",
   description: "AI-Powered Chatbot",
 };
 
 export default function LoginPage() {
   return (
-    <div className="grid min-h-svh lg:grid-cols-2 ">
+    <div className="grid min-h-screen lg:grid-cols-2 overflow-hidden radial-center-gradient-bg-dark">
       {/* Left side with form */}
-      <div className="relative flex flex-col gap-4 p-6 md:p-10 overflow-hidden">
-        {/* Background image behind form */}
-        <Image
-          src="/assets/images/background-gradient.png"
-          alt="background"
-          className="absolute inset-0 z-0 h-full w-full object-cover opacity-30"
-          width={100}
-          height={100}
-        />
-
+      <div className="flex flex-col gap-4 p-6 md:p-10 overflow-hidden">
         {/* Header/logo */}
         <div className="flex justify-center gap-2 md:justify-start z-10">
           <a href="#" className="flex items-center gap-2 font-medium">
             <div className="bg-none text-primary-foreground flex size-6 items-center justify-center rounded-md">
-              <Image src="/assets/images/main_logo_transparent.png" alt="main Logo" width={20} height={20} />
+              <Image src={Images.main_logo_transparent} alt="main Logo" width={20} height={20} />
             </div>
-            NexBot
+            {Names.app_name}
           </a>
         </div>
 
@@ -41,11 +34,16 @@ export default function LoginPage() {
       </div>
 
       {/* Right side with image */}
-      <div className="relative hidden lg:block bg-background">
-        {/* <video autoPlay loop muted className="absolute inset-0 h-full w-full object-cover">
-          <source src="/assets/videos/login.mp4" type="video/mp4" />
-        </video> */}
-        <LoginVideo />
+      <div className="hidden lg:block overflow-hidden">
+        <div className="relative h-full w-full">
+          <Image
+            src={Images.ai_svg_login}
+            alt="SVG"
+            fill
+            priority
+            className="object-cover"
+          />
+        </div>
       </div>
     </div>
   );

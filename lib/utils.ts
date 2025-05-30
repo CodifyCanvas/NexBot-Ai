@@ -1,6 +1,5 @@
 import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
-import { marked } from 'marked';
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -10,20 +9,20 @@ export function getColorByLetter(name: string) {
   let letter = name.charAt(0).toLowerCase();
 
   if (/^[a-d]$/.test(letter)) {
-    return "bg-green-950 text-green-400";
+    return "bg-green-300/70 text-green-800 dark:bg-green-800/70 dark:text-green-400";
   } else if (/^[e-h]$/.test(letter)) {
-    return "bg-blue-950 text-blue-400";
+    return "bg-blue-400/50 text-blue-800 dark:bg-blue-800/50 dark:text-blue-400";
   } else if (/^[i-m]$/.test(letter)) {
-    return "bg-red-950 text-red-400";
+    return "bg-red-300/50 text-red-800 dark:bg-red-800/50 dark:text-red-400";
   } else if (/^[n-r]$/.test(letter)) {
-    return "bg-purple-950 text-purple-400";
+    return "bg-purple-400/50 text-purple-800 dark:bg-purple-800/50 dark:text-purple-400";
   } else if (/^[s-v]$/.test(letter)) {
-    return "bg-orange-950 text-orange-400";
+    return "bg-orange-300/50 text-orange-800 dark:bg-orange-800/50 dark:text-orange-400";
   } else if (/^[w-z]$/.test(letter)) {
-    return "bg-yellow-950 text-yellow-400";
+    return "bg-yellow-400/50 text-yellow-800 dark:bg-yellow-800/50 dark:text-yellow-500";
   }
 
-  return "bg-muted text-foreground"; // Consistently return a string for the default case
+  return "bg-white text-black dark:bg-black dark:text-white"; // Consistently return a string for the default case
 }
 
 /**
@@ -63,16 +62,16 @@ export function getBgColorClass(n: number): string {
   if (n < 1 || n > 10) return '';
 
   const colors = {
-    1: "bg-red-500",
-    2: "bg-orange-500",
-    3: "bg-fuchsia-700",
-    4: "bg-yellow-500",
-    5: "bg-lime-500",
-    6: "bg-green-500",
-    7: "bg-emerald-500",
-    8: "bg-teal-500",
-    9: "bg-blue-500",
-    10: "bg-purple-500"
+    1: "bg-red-400 dark:bg-red-500",
+    2: "bg-orange-400 dark:bg-red-500",
+    3: "bg-fuchsia-500 dark:bg-fuchsia-700",
+    4: "bg-yellow-300 dark:bg-yellow-500",
+    5: "bg-lime-400 dark:bg-lime-500",
+    6: "bg-green-400 dark:bg-green-500",
+    7: "bg-emerald-500 dark:bg-emerald-500",
+    8: "bg-teal-400 dark:bg-teal-500",
+    9: "bg-blue-400 dark:bg-blue-500",
+    10: "bg-purple-400 dark:bg-purple-500"
   };
 
   return colors[n] || '';

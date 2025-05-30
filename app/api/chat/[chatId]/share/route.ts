@@ -5,7 +5,7 @@ import { auth } from '@/auth';
 import { toggleShare } from '@/lib/actions/chat';
 
 // PATCH: Toggle shareable status of a chat
-export async function PATCH( req: NextRequest, context: { params: { chatId: string } }) {
+export async function PATCH(req: NextRequest, context: { params: { chatId: string } }) {
   try {
     const session = await auth();
     const userId = session?.user?.id;

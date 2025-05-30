@@ -1,6 +1,8 @@
+// components/nav-secondary.tsx
 import React from "react";
 import Link from "next/link";
-import { UserLock, type LucideIcon } from "lucide-react";
+import { usePathname } from "next/navigation";
+import { cn } from "@/lib/utils";
 
 import {
   SidebarGroup,
@@ -10,7 +12,8 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import useUser from "@/hooks/useUser";
+
+import type { LucideIcon } from "lucide-react";
 
 interface NavItem {
   title: string;
@@ -24,26 +27,21 @@ interface NavSecondaryProps extends React.ComponentPropsWithoutRef<typeof Sideba
 }
 
 export function NavSecondary({ items, ...props }: NavSecondaryProps) {
-  const { user } = useUser();
+  const path = usePathname();
 
   return (
     <SidebarGroup {...props}>
       <SidebarGroupContent>
         <SidebarMenu>
-          {user?.admin && (
-            <SidebarMenuItem>
-              <SidebarMenuButton asChild>
-                <Link href="/admin/dashboard">
-                  <UserLock />
-                  <span>Admin Dashboard</span>
-                </Link>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-          )}
-
           {items.map(({ title, url, icon: Icon, badge }) => (
             <SidebarMenuItem key={title}>
-              <SidebarMenuButton asChild>
+              <SidebarMenuButton
+                asChild
+                className={cn(
+                  "bg-transparent hover:bg-blue-300 dark:bg-transparent active:bg-blue-400 dark:hover:bg-blue-200/20 dark:active:bg-blue-200/30",
+                  path === url && "dark:bg-blue-200/15 bg-blue-300/70"
+                )}
+              >
                 <Link href={url}>
                   <Icon />
                   <span>{title}</span>

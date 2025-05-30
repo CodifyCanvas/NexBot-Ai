@@ -1,3 +1,4 @@
+// app/api/chat/[chatId]/ask/route.ts
 'use server';
 
 import { NextRequest, NextResponse } from 'next/server';
@@ -5,7 +6,7 @@ import { generateGeminiResponse } from '@/lib/gemini/gemini';
 import { auth } from '@/auth';
 import { createNewMessage } from '@/lib/actions/message';
 
-export async function POST( req: NextRequest, context: { params: { chatId: string } }) {
+export async function POST(req: NextRequest, context: { params: { chatId: string } }) {
   // Get message and chatHistory from request body (default chatHistory to an empty array if not provided)
   const { message, chatHistory = [] } = await req.json();
 
@@ -24,7 +25,7 @@ export async function POST( req: NextRequest, context: { params: { chatId: strin
     }
 
     const { chatId } = await context.params;
-    
+
     // Ensure the chat history is trimmed to the last 5 messages for efficient processing
     const recentChatHistory = chatHistory.slice(-5);
     // Store the user's message in the database

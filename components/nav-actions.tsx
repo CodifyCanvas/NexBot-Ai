@@ -36,6 +36,8 @@ import { refreshChats } from '@/lib/chat-refresh';
 import { Chat } from '@/lib/definations';
 import { toast } from 'sonner';
 import useUser from '@/hooks/useUser';
+import { ModeToggle } from './ui/Mode-Toggle';
+import { useRouter } from 'next/navigation';
 
 export function NavActions() {
   const { chatId } = useParams() as { chatId?: string };
@@ -45,6 +47,7 @@ export function NavActions() {
   const [isFav, setIsFav] = React.useState(false);
   const [chatDate, setChatDate] = React.useState('');
   const [menuOpen, setMenuOpen] = React.useState(false);
+  const router = useRouter();
 
   const loadFavStatus = async () => {
     const res = await fetch('/api/chats/favorites');
@@ -60,43 +63,54 @@ export function NavActions() {
   };
 
   const toggleFav = async () => {
-  if (!chatId) return;
+    if (!chatId) return;
 
-  const newState = !isFav;
-  setIsFav(newState);
+    const newState = !isFav;
+    setIsFav(newState);
 
-  try {
-    const res = await fetch(`/api/chat/${chatId}/favorite`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ value: newState }),
-    });
-
-    const result = await res.json();
-
-    if (res.ok) {
-      toast.success(result.message || 'Updated favorites', {
-        richColors: true,
-        position: 'top-center',
-        icon: <Star size={17} />,
+    try {
+      const res = await fetch(`/api/chat/${chatId}/favorite`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ value: newState }),
       });
-    } else {
-      toast.error(result.error || 'Could not update favorites', {
+
+      const result = await res.json();
+
+      if (res.ok) {
+        toast.custom(
+          (id) => (
+            <div
+              className="isolate p-4 w-80 bg-green-300/50 dark:bg-green-300/20 backdrop-blur-2xl shadow-lg md:outline-1 outline-white/20 border dark:border-none border-black/10 md:rounded-md flex items-center gap-2"
+            >
+              <Star size={17} className='text-green-800 dark:text-green-300' /> {/* Icon */}
+              <span className="font-semibold text-sm whitespace-nowrap overflow-hidden text-green-800 dark:text-green-300 text-ellipsis">
+                {result.message || 'Updated favorites'}
+              </span>
+            </div>
+          ),
+          {
+            position: 'top-center',
+          }
+        );
+
+      } else {
+        toast.error(result.error || 'Could not update favorites', {
+          richColors: true,
+          icon: <Star size={17} />,
+        });
+      }
+
+      await loadFavStatus();
+      refreshChats();
+    } catch (error) {
+      console.error('Favorite update failed:', error);
+      toast.error('Something went wrong', {
         richColors: true,
         icon: <Star size={17} />,
       });
     }
-
-    await loadFavStatus();
-    refreshChats();
-  } catch (error) {
-    console.error('Favorite update failed:', error);
-    toast.error('Something went wrong', {
-      richColors: true,
-      icon: <Star size={17} />,
-    });
-  }
-};
+  };
 
   React.useEffect(() => {
     if (chatId) {
@@ -118,12 +132,22 @@ export function NavActions() {
   const handleCopyLink = async (chatId: string) => {
     const url = `${window.location.origin}/chat/${chatId}`
     try {
-      await navigator.clipboard.writeText(url)
-      toast.success("Link copied!", {
-        richColors: true,
-        position: "top-center",
-        icon: <Link2 size={20} />,
-      })
+      await navigator.clipboard.writeText(url);
+      toast.custom(
+        (id) => (
+          <div
+            className="isolate p-4 w-80 bg-green-300/50 dark:bg-green-300/20 backdrop-blur-2xl shadow-lg md:outline-1 outline-white/20 border dark:border-none border-black/10 md:rounded-md flex items-center gap-2"
+          >
+            <Link2 size={17} className='text-green-800 dark:text-green-300' /> {/* Icon */}
+            <span className="font-semibold text-sm whitespace-nowrap overflow-hidden text-green-800 dark:text-green-300 text-ellipsis">
+              Link copied!
+            </span>
+          </div>
+        ),
+        {
+          position: 'top-center',
+        }
+      );
     } catch (error) {
       console.error("Copy failed:", error)
       toast.error("Failed to copy link", {
@@ -177,6 +201,8 @@ export function NavActions() {
         </>
       )}
 
+      <ModeToggle />
+
       <Popover open={menuOpen} onOpenChange={setMenuOpen}>
         <PopoverTrigger asChild>
           <div
@@ -192,51 +218,51 @@ export function NavActions() {
           </div>
         </PopoverTrigger>
 
-        <PopoverContent className="w-56 p-0" align="end">
+        <PopoverContent className="w-56 p-0 isolate bg-white/10 backdrop-blur-xl shadow-lg outline-1 outline-white/20" align="end">
           <Sidebar collapsible="none" className="bg-transparent">
             <SidebarContent>
               <SidebarGroup className="border-b">
                 <SidebarGroupContent>
                   <SidebarMenu>
                     <SidebarMenuItem>
-                      <SidebarMenuButton>
+                      <SidebarMenuButton onClick={() => router.push('/chat/profile')} className='bg-transparent cursor-pointer hover:bg-blue-300 dark:bg-transparent active:bg-blue-400 dark:hover:bg-blue-200/20 dark:active:bg-blue-200/30'>
                         <UserRound /> <span>Profile</span>
                       </SidebarMenuButton>
                     </SidebarMenuItem>
                   </SidebarMenu>
                 </SidebarGroupContent>
               </SidebarGroup>
-              {chatId && 
-              <SidebarGroup className="-mt-2 border-b">
+              {chatId &&
+                <SidebarGroup className="-mt-2 border-b">
+                  <SidebarGroupContent>
+                    <SidebarMenu>
+                      <SidebarMenuItem>
+                        <SidebarMenuButton onClick={() => handleCopyLink(chatId)} className='bg-transparent hover:bg-blue-300 dark:bg-transparent active:bg-blue-400 dark:hover:bg-blue-200/20 dark:active:bg-blue-200/30'>
+                          <Link /> <span>Copy Link</span>
+                        </SidebarMenuButton>
+                      </SidebarMenuItem>
+                    </SidebarMenu>
+                  </SidebarGroupContent>
+                </SidebarGroup>}
+              <SidebarGroup className="-mt-2">
                 <SidebarGroupContent>
                   <SidebarMenu>
                     <SidebarMenuItem>
-                      <SidebarMenuButton onClick={() => handleCopyLink(chatId)}>
-                        <Link /> <span>Copy Link</span>
-                      </SidebarMenuButton>
+                      <ConfirmationDialog
+                        title="Sign out?"
+                        description="You will be signed out of your NexBot account."
+                        confirmButtonLabel="Yes, Sign out"
+                        onConfirm={handleSignOut}
+                        confirmButtonClassName="danger_button"
+                      >
+                        <div className="w-full text-destructive flex items-center gap-1 cursor-pointer px-3 py-2 hover:bg-red-300/40 dark:hover:bg-red-400/25 dark:hover:text-red-500 rounded-md text-sm">
+                          <LogOut size={17} /> <span>Log out</span>
+                        </div>
+                      </ConfirmationDialog>
                     </SidebarMenuItem>
                   </SidebarMenu>
                 </SidebarGroupContent>
-              </SidebarGroup> }
-              <SidebarGroup className="-mt-2"> 
-  <SidebarGroupContent>
-    <SidebarMenu>
-      <SidebarMenuItem>
-        <ConfirmationDialog
-          title="Sign out?"
-          description="You will be signed out of your NexBot account."
-          confirmButtonLabel="Yes, Sign out"
-          onConfirm={handleSignOut}
-          confirmButtonClassName="danger_button"
-        >
-          <div className="w-full text-destructive flex items-center gap-1 cursor-pointer px-3 py-2 hover:bg-muted rounded-md text-sm">
-            <LogOut size={17}/> <span>Log out</span>
-          </div>
-        </ConfirmationDialog>
-      </SidebarMenuItem>
-    </SidebarMenu>
-  </SidebarGroupContent>
-</SidebarGroup>
+              </SidebarGroup>
 
             </SidebarContent>
           </Sidebar>

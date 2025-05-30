@@ -4,7 +4,7 @@ import { auth } from '@/auth';
 import { favoriteChat } from '@/lib/actions/chat';
 
 // Toggling Chat to Favorites
-export async function POST( req: NextRequest, context: { params: { chatId: string } }) {
+export async function POST(req: NextRequest, context: { params: { chatId: string } }) {
   try {
     // Get session from the authentication provider
     const session = await auth();

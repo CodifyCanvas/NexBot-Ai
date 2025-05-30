@@ -71,7 +71,7 @@ export default function Chats() {
       {favorites.length > 0 && (
         <NavChat label="Favorites" chats={favorites} />
       )}
-      <NavChat label="All Chats" chats={chats} favoriteList={favorites} />
+      <NavChat label="All Chats" chats={chats} favoriteList={favorites} showActive={true}/>
     </>
   )
 }

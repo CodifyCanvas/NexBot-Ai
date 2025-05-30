@@ -7,6 +7,7 @@ import TextareaAutosize from 'react-textarea-autosize';
 import { Send } from 'lucide-react';
 
 import Spinner from './Spinner';
+import { cn } from '@/lib/utils';
 
 interface ChatInputProps {
   chatId?: string;
@@ -108,7 +109,7 @@ export default function ChatInput({
       <div className="flex items-center justify-center">
         <form
           onSubmit={handleSubmit}
-          className="relative flex items-end gap-1 sm:gap-3 w-full rounded-lg md:rounded-4xl bg-[#202124] px-2 sm:px-4 py-2 border border-white/90 shadow-md"
+          className={cn("isolate bg-white/80 backdrop-blur-xl md:outline-1 outline-black/10 dark:outline-white/20  dark:border-none border-black/10 relative flex gap-1 sm:gap-3 w-full rounded-md dark:bg-slate-900/80 px-2 sm:px-4 py-2 border shadow-lg", message.trim() ? 'items-end' : 'items-center')}
         >
           <TextareaAutosize
             minRows={1}
@@ -120,7 +121,7 @@ export default function ChatInput({
             onKeyDown={(e) => {
               if (e.key === 'Enter' && !e.shiftKey) handleSubmit(e);
             }}
-            className="flex-1 bg-transparent resize-none text-white px-2 py-2 placeholder-gray-400 text-sm sm:text-base focus:outline-none"
+            className="flex-1 custom-scrollbar bg-transparent resize-none text-black/85 dark:text-white px-2 py-2 placeholder-gray-400 text-sm  transition-all duration-300 sm:text-base focus:outline-none"
           />
 
           <button
@@ -128,15 +129,15 @@ export default function ChatInput({
             disabled={!message.trim()}
             className={`p-2 rounded-lg transition-colors ${
               message.trim()
-                ? 'bg-white/10 text-white hover:bg-gradient-to-r hover:from-[var(--color-peach)] hover:to-[var(--color-purple)]'
-                : 'text-gray-600'
+                ? 'isolate dark:bg-white/10 backdrop-blur-xl md:outline-1 outline-white/10 dark:text-white text-blue-500 hover:text-white transition-all duration-300 hover:bg-gradient-to-tr hover:from-blue-400 hover:to-blue-700'
+                : 'text-gray-400 dark:text-gray-600'
             }`}
           >
-            {isLoading ? <Spinner variant="gradient" /> : <Send className="w-5 h-5" />}
+            {isLoading ? <div className='scale-110'><Spinner variant="blue-gradient" /></div> : <Send className="w-5 h-5" />}
           </button>
         </form>
       </div>
-      <p className="text-xs text-center mt-2 text-gray-400">
+      <p className="text-xs text-center mt-2 text-gray-600 dark:text-gray-400">
         🤖 Info may be off — verify to be safe.
       </p>
     </div>

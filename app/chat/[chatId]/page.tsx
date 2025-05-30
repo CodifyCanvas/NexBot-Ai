@@ -1,8 +1,8 @@
+// app/chat/[chatId]/page.tsx
 'use client';
 
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import Image from 'next/image';
 import { toast } from 'sonner'; // ✅ Add toast
 
 import ChatCard from '@/components/custom/ChatCard';
@@ -82,21 +82,15 @@ export default function ChatRoutePage() {
 
   return (
     <div className="w-full relative h-full flex flex-col justify-start gap-2">
-      <Image
-        src="/assets/images/chat_background.png"
-        alt="background"
-        fill
-        className="absolute inset-0 z-0 object-cover opacity-30"
-      />
 
-      <ScrollArea className="w-full" style={{ height: 'calc(100vh - 125px)' }}>
-        <div className="max-w-3xl mx-auto mb-20 px-2">
-          <ChatCard chat={chatData} />
+      <ScrollArea className="w-full " style={{ height: 'calc(100vh - 125px)' }}>
+        <div className="max-w-3xl mx-auto mb-20 px-0 sm:px-2">
+          <ChatCard messages={chatData} />
           {loading && <ChatFallback />}
         </div>
       </ScrollArea>
 
-      <div className="absolute bottom-1 flex w-full justify-center">
+      <div className="absolute bottom-1 flex w-full justify-center px-3">
         <div className="w-full max-w-3xl pb-3">
           <ChatInput
             focus={false}

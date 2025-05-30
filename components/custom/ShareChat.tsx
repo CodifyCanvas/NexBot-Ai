@@ -1,13 +1,13 @@
 // app/components/custom/ShareChat.tsx
 'use client'
 
-import { MessageSquareShare } from 'lucide-react'
+import { CircleCheck, MessageSquareShare } from 'lucide-react'
 import React, { useState } from 'react'
 import { Switch } from '../ui/switch'
 import { toast } from 'sonner'
 import { refreshChats } from '@/lib/chat-refresh'
 
-const ShareChat = ({chatId, isShareable}: {chatId: string, isShareable: boolean}) => {
+const ShareChat = ({ chatId, isShareable }: { chatId: string, isShareable: boolean }) => {
   const [isSharable, setIsSharable] = useState(isShareable)
   const [loading, setLoading] = useState(false)
 
@@ -30,9 +30,23 @@ const ShareChat = ({chatId, isShareable}: {chatId: string, isShareable: boolean}
         throw new Error(data.error || 'Failed to update share status')
       }
 
+      toast.custom(
+        (id) => (
+          <div
+            className="isolate p-4 w-80 bg-green-300/50 flex-row dark:bg-green-300/20 backdrop-blur-2xl shadow-lg md:outline-1 outline-white/20 border dark:border-none border-black/10 rounded-md flex items-center gap-2"
+          >
+            <CircleCheck size={17} className='text-green-800 dark:text-green-300' /> {/* Icon */}
+            <span className="font-semibold text-sm whitespace-nowrap overflow-hidden text-green-800 dark:text-green-300">
+              {data.message}
+            </span>
+          </div>
+        ),
+        {
+          position: 'top-center',
+        }
+      );
       refreshChats();
 
-      toast.success(data.message, { richColors: true })
     } catch (err) {
       console.error('Error updating share status:', err)
       toast.error('Could not update share status. Try again.', { richColors: true })
@@ -52,7 +66,8 @@ const ShareChat = ({chatId, isShareable}: {chatId: string, isShareable: boolean}
         checked={isSharable}
         onCheckedChange={handleToggle}
         disabled={loading}
-        className='cursor-pointer'
+        className="cursor-pointer data-[state=checked]:bg-blue-500 "
+        thumbClassName="data-[state=checked]:bg-white"
       />
     </div>
   )

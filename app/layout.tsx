@@ -5,6 +5,7 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/sonner"
 import { SessionProvider } from "next-auth/react";
 import { TooltipProvider } from "@/components/ui/tooltip"
+import { Images } from "@/constants/constants";
 
 const openSans =Open_Sans({
   variable: "--font-open-sans",
@@ -15,7 +16,7 @@ export const metadata: Metadata = {
   title: "NexBot",
   description: "AI-Powered Chatbot",
   icons: {
-    icon: "/assets/images/main_logo.png",
+    icon: `${Images.main_logo_transparent}`,
   },
 };
 

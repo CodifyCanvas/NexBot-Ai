@@ -1,7 +1,6 @@
+// app/chat/search/page.tsx
 import SearchBox from '@/components/custom/SearchBox'
 import { Metadata } from 'next';
-import Image from 'next/image';
-import React from 'react'
 
 export const metadata: Metadata = {
   title: "NexBot - Search",
@@ -19,14 +18,6 @@ const SearchPage = () => {
        <h1 className='text-xl text-white sm:text-2xl md:text-3xl'>Find the Right Chat, Right Away</h1>
        <p className='text-xs text-neutral-400 px-4 py-1 md:text-sm lg:text-lg'>No more endless scrolling—search and discover messages instantly.</p>
       </div>
-
-      <Image
-              src="/assets/images/chat_background.png"
-              alt="background"
-              fill
-              className="absolute inset-0 z-0 object-cover opacity-30"
-            />
-
       <SearchBox />
     </div>
   )
