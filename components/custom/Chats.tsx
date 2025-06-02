@@ -1,77 +1,61 @@
 'use client'
 
-import { useEffect, useState, useRef } from 'react'
+// Import SWR for data fetching and React hooks
+import useSWR from 'swr'
+import { useEffect, useCallback } from 'react'
 import { usePathname } from 'next/navigation'
 import { NavChat } from '../nav-chats'
 import { onChatsRefresh } from '@/lib/chat-refresh'
 import { Chat } from '@/lib/definations'
 import Spinner from './Spinner'
 
+// Memoized fetcher function to be used by SWR to fetch data from given URL
+
 export default function Chats() {
-  const [chats, setChats] = useState<Chat[]>([])
-  const [favorites, setFavorites] = useState<Chat[]>([])
-  const [isLoading, setIsLoading] = useState(true)
   const pathname = usePathname()
-  const firstLoad = useRef(true)
+  
+  const fetcher = useCallback((url: string) => fetch(url).then(res => res.json()), [])
+  
+  // SWR hook to fetch all chats; refreshes automatically
+  const { data: chats, mutate: mutateChats, isLoading: isLoadingChats } = useSWR<Chat[]>('/api/chats', fetcher)
 
-  const loadChats = async (showSpinner = false) => {
-    if (showSpinner) setIsLoading(true)
+  // SWR hook to fetch favorite chats
+  const { data: favorites, mutate: mutateFavorites, isLoading: isLoadingFavorites } = useSWR<Chat[]>('/api/chats/favorites', fetcher)
 
-    try {
-      const [chatsRes, favoritesRes] = await Promise.all([
-        fetch('/api/chats', { cache: 'no-store' }),
-        fetch('/api/chats/favorites', { cache: 'no-store' }),
-      ])
+  // SWR provides a loading state
+  const isLoading = isLoadingChats || isLoadingFavorites
 
-      const [chatsData, favoritesData] = await Promise.all([
-        chatsRes.json(),
-        favoritesRes.json(),
-      ])
-
-      setChats(chatsData)
-      setFavorites(favoritesData)
-    } catch (error) {
-      console.error('Failed to load chats:', error)
-    } finally {
-      if (showSpinner) setIsLoading(false)
-    }
-  }
-
-  // On mount: load with spinner
+  // On pathname change, revalidate data silently without spinner
   useEffect(() => {
-    loadChats(true)
-    firstLoad.current = false
-  }, [])
+    mutateChats()
+    mutateFavorites()
+  }, [pathname, mutateChats, mutateFavorites])
 
-  // On pathname change: reload silently without spinner
+  // Subscribe to custom chat refresh events, trigger data reload silently
   useEffect(() => {
-    if (!firstLoad.current) {
-      loadChats(false)
-    }
-  }, [pathname])
-
-  // On custom refresh: reload silently without spinner
-  useEffect(() => {
-    const unsubscribe = onChatsRefresh(() => loadChats(false))
+    const unsubscribe = onChatsRefresh(() => {
+      mutateChats()
+      mutateFavorites()
+    })
     return unsubscribe
-  }, [])
+  }, [mutateChats, mutateFavorites])
 
+  // Show loading spinner while fetching
   if (isLoading) {
     return (
       <div className="flex flex-1 items-start mt-10 justify-center">
         <div className="scale-125">
-          <Spinner variant="gradient" />
+          <Spinner variant="blue-gradient" />
         </div>
       </div>
     )
   }
 
+  // Render favorite chats if available, then all chats
   return (
     <>
-      {favorites.length > 0 && (
-        <NavChat label="Favorites" chats={favorites} />
-      )}
-      <NavChat label="All Chats" chats={chats} favoriteList={favorites} showActive={true}/>
+      {favorites?.length > 0 && <NavChat label="Favorites" chats={favorites} />}
+      <NavChat label="All Chats" chats={chats || []} favoriteList={favorites || []} showActive={true} />
     </>
   )
 }

@@ -17,8 +17,6 @@ export async function generateGeminiResponse(
     // Construct the prompt that will be passed to Gemini
     const fullPrompt = `${conversationHistory}\nUser: ${prompt}\nBot:`;
 
-    console.log("Full prompt sent to Gemini:", fullPrompt);  // Debugging output to see how the prompt looks
-
     // Call the Gemini API to generate the response
     const response = await ai.models.generateContent({
       model: "gemini-2.0-flash", // Use the model suited for your case

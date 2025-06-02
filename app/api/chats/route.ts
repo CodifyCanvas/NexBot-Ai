@@ -1,32 +1,51 @@
-// app/api/chats/route.ts
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@/auth"; // from your auth.ts
-import { fetchChats } from "@/lib/actions/chat";
+import { auth } from "@/auth"; // Authentication helper
+import { deleteAllChats, fetchChats } from "@/lib/actions/chat";
 
 export async function GET(req: NextRequest) {
   try {
-    // Get user session from NextAuth
     const session = await auth();
 
-    // Check for valid session and user ID
     if (!session?.user?.id) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      return NextResponse.json({ error: "Unauthorized access" }, { status: 401 });
     }
 
-    const userId = session.user.id;
+    const userId = Number(session.user.id);
+    const chats = await fetchChats(userId);
 
-    // Fetch all chats for the user
-    const result = await fetchChats(userId);
+    return NextResponse.json(
+      chats?.length ? chats : { message: "No chats found" },
+      { status: 200 }
+    );
+  } catch (error) {
+    console.error("GET /api/chats error:", error);
+    return NextResponse.json(
+      { error: "Failed to fetch chats. Please try again later." },
+      { status: 500 }
+    );
+  }
+}
 
-    // Optional: return empty array if no chats instead of error
-    if (!result || result.length === 0) {
-      return NextResponse.json({ message: "No chats found" }, { status: 200 });
+export async function DELETE(req: NextRequest) {
+  try {
+    const session = await auth();
+
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: "Unauthorized access" }, { status: 401 });
     }
 
-    return NextResponse.json(result, { status: 200 });
+    const userId = Number(session.user.id);
+    await deleteAllChats(userId);
 
-  } catch (err) {
-    console.error("Error fetching chats:", err);
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    return NextResponse.json(
+      { message: "All chats deleted successfully" },
+      { status: 200 }
+    );
+  } catch (error) {
+    console.error("DELETE /api/chats error:", error);
+    return NextResponse.json(
+      { error: "Failed to delete chats. Please try again later." },
+      { status: 500 }
+    );
   }
 }

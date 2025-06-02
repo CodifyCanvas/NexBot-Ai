@@ -13,7 +13,6 @@ const page = () => {
     <div className='flex h-full w-full flex-col p-2 realtive gap-6 z-20 px-10 py-5'>
       <div className='flex flex-col items-start justify-center gap-2 text-center z-20 w-full'>
         <h1 className='text-xl text-white sm:text-2xl md:text-3xl'>Profile</h1>
-        <p className='text-xs text-neutral-400 py-1 md:text-sm lg:text-lg'>Profile Page: Your space, your rules—customize and stay in control.</p>
       </div>
       <ProfileForm />
     </div>

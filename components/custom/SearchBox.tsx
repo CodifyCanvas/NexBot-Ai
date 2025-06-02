@@ -19,7 +19,6 @@ const ChatSearchBox: React.FC = () => {
 
   const { open: sidebarOpen } = useSidebar();
 
-  // Debounce search text
   useEffect(() => {
     const delay = setTimeout(() => {
       setDebouncedText(searchText.trim());
@@ -27,7 +26,6 @@ const ChatSearchBox: React.FC = () => {
     return () => clearTimeout(delay);
   }, [searchText]);
 
-  // Fetch chat results
   const fetchChats = useCallback(async (query: string) => {
     setIsLoading(true);
     try {
@@ -54,7 +52,7 @@ const ChatSearchBox: React.FC = () => {
     if (isLoading) {
       return (
         <div className="w-full flex justify-center items-center">
-          <Spinner variant="gradient" />
+          <Spinner variant="blue-gradient" />
         </div>
       );
     }
@@ -62,7 +60,11 @@ const ChatSearchBox: React.FC = () => {
     if (!debouncedText.trim()) return null;
 
     if (chatResults.length === 0) {
-      return <p className="text-gray-500 text-sm text-center">No chats found.</p>;
+      return (
+        <p className="text-gray-500 dark:text-gray-400 text-sm text-center">
+          No chats found.
+        </p>
+      );
     }
 
     return <SearchChatCard searchChats={chatResults} />;
@@ -71,7 +73,9 @@ const ChatSearchBox: React.FC = () => {
   return (
     <Card
       className={cn(
-        'bg-transparent relative border-2 w-full h-full md:h-auto z-10 rounded-4xl shadow-2xs shadow-pink-500 transition-all duration-300',
+        'relative border-2 w-full h-full md:h-auto z-10 rounded-4xl shadow-2xs transition-all duration-300',
+        'bg-white dark:bg-transparent', // Light mode bg fallback
+        'shadow-blue-500 dark:shadow-blue-400', // Light/dark shadow
         searchText ? 'min-h-[24rem]' : 'h-24',
         sidebarOpen ? 'md:w-full' : 'md:w-2/3',
         'lg:w-2/3 xl:w-1/2'
@@ -82,13 +86,13 @@ const ChatSearchBox: React.FC = () => {
           type="text"
           variant="minimal"
           placeholder="Search anything you've said or seen..."
-          className="w-full min-h-10"
+          className="w-full text-black dark:text-white/90 min-h-10"
           value={searchText}
           onChange={(e) => setSearchText(e.target.value)}
         />
         {searchText && (
           <X
-            className="cursor-pointer text-gray-400 hover:text-white"
+            className="cursor-pointer text-gray-500 hover:text-black dark:text-gray-400 dark:hover:text-white"
             onClick={() => setSearchText('')}
           />
         )}
@@ -96,7 +100,7 @@ const ChatSearchBox: React.FC = () => {
 
       {debouncedText && (
         <>
-          <hr className="border-neutral-700" />
+          <hr className="border-neutral-300 dark:border-neutral-700" />
           <CardContent className="p-0 sm:p-2">
             <ScrollArea className="max-h-72 custom-scrollbar w-full rounded-md overflow-y-auto">
               <div className="sm:p-2 flex flex-col gap-1">{renderResults}</div>

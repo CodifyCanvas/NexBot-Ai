@@ -2,17 +2,17 @@
 "use client";
 
 import * as React from "react";
-import { Search, SquarePen, MessageCircleQuestion, UserLock } from "lucide-react";
+import { MessageCircleQuestion, UserLock } from "lucide-react";
 
 import { NavMain } from "@/components/nav-main";
 import { NavSecondary } from "@/components/nav-secondary";
 import { Sidebar, SidebarContent, SidebarHeader, SidebarRail } from "@/components/ui/sidebar";
 import Chats from "./custom/Chats";
-import useUser from "@/hooks/useUser";
 import { navMain } from "@/constants/constants";
+import { useUserContext } from "@/hooks/context/userContext";
 
 export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
-  const { user } = useUser();
+  const { user } = useUserContext();
 
   const navSecondary = [
     ...(user?.admin

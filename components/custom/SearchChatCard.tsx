@@ -55,7 +55,7 @@ const SearchChatCard: React.FC<SearchChatCardProps> = ({ searchChats }) => {
             <Link
               href={`/chat/${chat.chatId}`}
               key={chat.chatId}
-              className="flex flex-row gap-2 px-0 sm:px-3 py-2 rounded-md hover:bg-neutral-700/70 cursor-pointer no-underline"
+              className="flex flex-row gap-2 px-0 sm:px-3 py-2 rounded-md dark:hover:bg-blue-500/50 hover:bg-blue-300/80 cursor-pointer no-underline"
             >
               {/* Colored indicator bar */}
               <div className="w-1 min-h-full rounded-4xl gradient" />
@@ -63,7 +63,7 @@ const SearchChatCard: React.FC<SearchChatCardProps> = ({ searchChats }) => {
               {/* Main content */}
               <div className="flex flex-row items-center justify-between w-full">
                 <div className="flex flex-col gap-0.5 overflow-hidden flex-1">
-                  <div className="text-white font-semibold text-sm h-5 truncate">
+                  <div className=" dark:text-white font-semibold text-sm h-5 truncate">
                     {chat.chatTitle}
                   </div>
                 </div>

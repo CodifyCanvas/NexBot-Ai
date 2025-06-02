@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/auth';
-import { fetchUser } from '@/lib/actions/user';
+import { banUserAccount, fetchUser } from '@/lib/actions/user';
 
 export async function GET(req: NextRequest) {
   try {
@@ -24,5 +24,23 @@ export async function GET(req: NextRequest) {
   } catch (err) {
     console.error('Error fetching User:', err);
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+  }
+}
+
+export async function PUT(req: NextRequest) {
+  try {
+    const session = await auth();
+    const userId = session?.user?.id;
+
+    if (!userId) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    await banUserAccount(Number(userId));
+
+    return NextResponse.json({ message: "Account deactivated successfully" }, { status: 200 });
+  } catch (err) {
+    console.error("Error deactivating account:", err);
+    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }

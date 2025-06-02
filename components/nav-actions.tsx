@@ -1,13 +1,12 @@
 'use client';
 
-import * as React from 'react';
+import { Suspense, useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import {
   Link,
   Link2,
   LogOut,
   Star,
-  Trash,
   UserRound,
 } from 'lucide-react';
 
@@ -35,18 +34,20 @@ import { cn, getColorByLetter } from '@/lib/utils';
 import { refreshChats } from '@/lib/chat-refresh';
 import { Chat } from '@/lib/definations';
 import { toast } from 'sonner';
-import useUser from '@/hooks/useUser';
 import { ModeToggle } from './ui/Mode-Toggle';
 import { useRouter } from 'next/navigation';
+import { useUserContext } from '@/hooks/context/userContext';
+import { ChatDateSkeleton, ProfileSkeleton, ToggleFavoriteSkeleton, ToggleSkeleton, ToggleThemeSkeleton } from './Skeletons/NavActionFallbacks';
 
 export function NavActions() {
   const { chatId } = useParams() as { chatId?: string };
 
-  const { user, loading, error } = useUser();
+  const { user, loading, error } = useUserContext();
 
-  const [isFav, setIsFav] = React.useState(false);
-  const [chatDate, setChatDate] = React.useState('');
-  const [menuOpen, setMenuOpen] = React.useState(false);
+  const [isFav, setIsFav] = useState(false);
+  const [chatDate, setChatDate] = useState('');
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [chatLoading, setChatLoading] = useState(false);
   const router = useRouter();
 
   const loadFavStatus = async () => {
@@ -57,9 +58,17 @@ export function NavActions() {
   };
 
   const loadChatDate = async () => {
-    const res = await fetch(`/api/chat/${chatId}`);
-    const data = await res.json();
-    setChatDate(data.createdAt || '');
+    try {
+      setChatLoading(true);
+      const res = await fetch(`/api/chat/${chatId}`);
+      const data = await res.json();
+      setChatDate(data.createdAt || '');
+    } catch (error) {
+      console.error('Failed to load chat date:', error);
+      setChatDate('');
+    } finally {
+      setChatLoading(false);
+    }
   };
 
   const toggleFav = async () => {
@@ -112,21 +121,16 @@ export function NavActions() {
     }
   };
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (chatId) {
       loadFavStatus();
       loadChatDate();
     }
   }, [chatId]);
 
-  if (loading || !user) return null; // optional: add spinner
   if (error) {
     console.error(error);
-    return (
-      <div className="text-red-500 font-semibold animate-pulse">
-        Failed to load user info. Try again later.
-      </div>
-    );
+    return null;
   }
 
   const handleCopyLink = async (chatId: string) => {
@@ -162,7 +166,9 @@ export function NavActions() {
     <div className="flex items-center gap-2 text-sm">
       {chatId && (
         <>
-          {chatDate && (
+          {chatLoading ? (
+            <ChatDateSkeleton />
+          ) : chatDate ? (
             <div className="text-muted-foreground hidden md:inline-block mr-1">
               <Tooltip>
                 <TooltipTrigger>
@@ -177,97 +183,109 @@ export function NavActions() {
                 <TooltipContent>Chat creation date</TooltipContent>
               </Tooltip>
             </div>
-          )}
+          ) : null}
 
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <div
-                role="button"
-                onClick={toggleFav}
-                className="h-7 w-7 mr-2 flex items-center justify-center cursor-pointer hover:scale-125"
-              >
-                <Star
-                  className={cn(
-                    'text-yellow-500',
-                    isFav
-                      ? 'h-5 w-5 fill-yellow-300 animate-pulse'
-                      : 'h-4 w-4 fill-none'
-                  )}
-                />
-              </div>
-            </TooltipTrigger>
-            <TooltipContent>{isFav ? 'Unfavorite' : 'Favorite'}</TooltipContent>
-          </Tooltip>
+          {chatLoading ? (
+            <ToggleFavoriteSkeleton />
+          ) : (
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <div
+                  role="button"
+                  onClick={toggleFav}
+                  className="h-7 w-7 mr-2 flex items-center justify-center cursor-pointer hover:scale-125"
+                >
+                  <Star
+                    className={cn(
+                      'text-yellow-500',
+                      isFav
+                        ? 'h-5 w-5 fill-yellow-300 animate-pulse'
+                        : 'h-4 w-4 fill-none'
+                    )}
+                  />
+                </div>
+              </TooltipTrigger>
+              <TooltipContent>{isFav ? 'Unfavorite' : 'Favorite'}</TooltipContent>
+            </Tooltip>
+          )}
         </>
       )}
 
-      <ModeToggle />
+      {/* Mode Toggle or Skeleton */}
+      {loading ? <ToggleThemeSkeleton /> : <ModeToggle />}
 
-      <Popover open={menuOpen} onOpenChange={setMenuOpen}>
-        <PopoverTrigger asChild>
-          <div
-            role="button"
-            className='h-8 w-8 rounded-full flex items-center justify-center cursor-pointer'
-          >
-            <Avatar>
-              <AvatarImage src={user.profileImg} />
-              <AvatarFallback className={getColorByLetter(user.name)}>
-                {user.name ? user.name.charAt(0).toUpperCase() : 'S'}
-              </AvatarFallback>
-            </Avatar>
-          </div>
-        </PopoverTrigger>
+      {/* Avatar or Skeleton */}
+      {loading ? (
+        <div className="h-8 w-8 rounded-full bg-gray-300 dark:bg-gray-700 animate-pulse" />
+      ) : (
+        <Popover open={menuOpen} onOpenChange={setMenuOpen}>
+          <PopoverTrigger asChild>
+            <Suspense fallback={<ProfileSkeleton />}>
+              <div
+                role="button"
+                className='h-8 w-8 rounded-full flex items-center justify-center cursor-pointer'
+              >
+                <Avatar>
+                  <AvatarImage src={user?.profileImg} />
+                  <AvatarFallback className={getColorByLetter(user?.name || 's')}>
+                    {user?.name ? user.name.charAt(0).toUpperCase() : 'S'}
+                  </AvatarFallback>
+                </Avatar>
+              </div>
+            </Suspense>
+          </PopoverTrigger>
 
-        <PopoverContent className="w-56 p-0 isolate bg-white/10 backdrop-blur-xl shadow-lg outline-1 outline-white/20" align="end">
-          <Sidebar collapsible="none" className="bg-transparent">
-            <SidebarContent>
-              <SidebarGroup className="border-b">
-                <SidebarGroupContent>
-                  <SidebarMenu>
-                    <SidebarMenuItem>
-                      <SidebarMenuButton onClick={() => router.push('/chat/profile')} className='bg-transparent cursor-pointer hover:bg-blue-300 dark:bg-transparent active:bg-blue-400 dark:hover:bg-blue-200/20 dark:active:bg-blue-200/30'>
-                        <UserRound /> <span>Profile</span>
-                      </SidebarMenuButton>
-                    </SidebarMenuItem>
-                  </SidebarMenu>
-                </SidebarGroupContent>
-              </SidebarGroup>
-              {chatId &&
-                <SidebarGroup className="-mt-2 border-b">
+          <PopoverContent className="w-56 p-0 isolate bg-white/10 backdrop-blur-xl shadow-lg outline-1 outline-white/20" align="end">
+            <Sidebar collapsible="none" className="bg-transparent">
+              <SidebarContent>
+                <SidebarGroup className="border-b">
                   <SidebarGroupContent>
                     <SidebarMenu>
                       <SidebarMenuItem>
-                        <SidebarMenuButton onClick={() => handleCopyLink(chatId)} className='bg-transparent hover:bg-blue-300 dark:bg-transparent active:bg-blue-400 dark:hover:bg-blue-200/20 dark:active:bg-blue-200/30'>
-                          <Link /> <span>Copy Link</span>
+                        <SidebarMenuButton onClick={() => router.push('/chat/profile')} className='bg-transparent cursor-pointer hover:bg-blue-300 dark:bg-transparent active:bg-blue-400 dark:hover:bg-blue-200/20 dark:active:bg-blue-200/30'>
+                          <UserRound /> <span>Profile</span>
                         </SidebarMenuButton>
                       </SidebarMenuItem>
                     </SidebarMenu>
                   </SidebarGroupContent>
-                </SidebarGroup>}
-              <SidebarGroup className="-mt-2">
-                <SidebarGroupContent>
-                  <SidebarMenu>
-                    <SidebarMenuItem>
-                      <ConfirmationDialog
-                        title="Sign out?"
-                        description="You will be signed out of your NexBot account."
-                        confirmButtonLabel="Yes, Sign out"
-                        onConfirm={handleSignOut}
-                        confirmButtonClassName="danger_button"
-                      >
-                        <div className="w-full text-destructive flex items-center gap-1 cursor-pointer px-3 py-2 hover:bg-red-300/40 dark:hover:bg-red-400/25 dark:hover:text-red-500 rounded-md text-sm">
-                          <LogOut size={17} /> <span>Log out</span>
-                        </div>
-                      </ConfirmationDialog>
-                    </SidebarMenuItem>
-                  </SidebarMenu>
-                </SidebarGroupContent>
-              </SidebarGroup>
+                </SidebarGroup>
+                {chatId &&
+                  <SidebarGroup className="-mt-2 border-b">
+                    <SidebarGroupContent>
+                      <SidebarMenu>
+                        <SidebarMenuItem>
+                          <SidebarMenuButton onClick={() => handleCopyLink(chatId)} className='bg-transparent hover:bg-blue-300 dark:bg-transparent active:bg-blue-400 dark:hover:bg-blue-200/20 dark:active:bg-blue-200/30'>
+                            <Link /> <span>Copy Link</span>
+                          </SidebarMenuButton>
+                        </SidebarMenuItem>
+                      </SidebarMenu>
+                    </SidebarGroupContent>
+                  </SidebarGroup>}
+                <SidebarGroup className="-mt-2">
+                  <SidebarGroupContent>
+                    <SidebarMenu>
+                      <SidebarMenuItem>
+                        <ConfirmationDialog
+                          title="Sign out?"
+                          description="You will be signed out of your NexBot account."
+                          confirmButtonLabel="Yes, Sign out"
+                          onConfirm={handleSignOut}
+                          confirmButtonClassName="danger_button"
+                        >
+                          <div className="w-full text-destructive flex items-center gap-1 cursor-pointer px-3 py-2 hover:bg-red-300/40 dark:hover:bg-red-400/25 dark:hover:text-red-500 rounded-md text-sm">
+                            <LogOut size={17} /> <span>Log out</span>
+                          </div>
+                        </ConfirmationDialog>
+                      </SidebarMenuItem>
+                    </SidebarMenu>
+                  </SidebarGroupContent>
+                </SidebarGroup>
 
-            </SidebarContent>
-          </Sidebar>
-        </PopoverContent>
-      </Popover>
+              </SidebarContent>
+            </Sidebar>
+          </PopoverContent>
+        </Popover>
+      )}
     </div>
   );
 }

@@ -1,7 +1,7 @@
 "use server";
-import { chats, favoriteChats, messages } from "@/drizzle/schema";
+import { chats, favoriteChats, messages, users } from "@/drizzle/schema";
 import { db } from "@/lib/db";
-import { and, desc, eq, or, sql } from 'drizzle-orm';
+import { and, desc, eq, inArray, or, sql } from 'drizzle-orm';
 import { ChatResult } from "../definations";
 
 export async function createNewChat(userId: number, chatId: string, title: string, color: number) {
@@ -14,7 +14,7 @@ export async function createNewChat(userId: number, chatId: string, title: strin
   return true;
 }
 
-export async function fetchChats(userId: string) {
+export async function fetchChats(userId: number) {
   const result = await db
     .select()
     .from(chats)
@@ -115,6 +115,28 @@ export async function DeleteChat(userId: number, chatId: string) {
 
   // Step 4: Delete the chat itself
   await db.delete(chats).where(eq(chats.chatId, chatId));
+}
+
+// Function to Delete All Chats for a Given User
+export async function deleteAllChats(userId: number) {
+  // Step 1: Delete all favorite chats for the user
+  await db.delete(favoriteChats).where(eq(favoriteChats.userId, userId));
+
+  // Step 2: Get all chat records for the user
+  const userChats = await db
+    .select({ chatId: chats.chatId })
+    .from(chats)
+    .where(eq(chats.userId, userId));
+
+  if (userChats.length === 0) return;
+
+  const chatIds = userChats.map((chat) => chat.chatId);
+
+  // Step 3: Delete all messages related to these chatIds
+  await db.delete(messages).where(inArray(messages.chatId, chatIds));
+
+  // Step 4: Delete the chats themselves
+  await db.delete(chats).where(inArray(chats.chatId, chatIds));
 }
 
 // Toggle chat share status (private ↔ shareable)

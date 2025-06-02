@@ -10,7 +10,7 @@ export const authConfig = {
       const isLoggedIn = !!auth?.user;
 
       // Define the protected paths
-      const protectedRoutes = ['/chat', '/dashboard'];
+      const protectedRoutes = ['/chat', '/admin'];
       const isProtected = protectedRoutes.some(path =>
         nextUrl.pathname.startsWith(path)
       );

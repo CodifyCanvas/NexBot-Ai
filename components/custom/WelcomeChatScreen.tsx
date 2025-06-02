@@ -1,11 +1,11 @@
 import React, { memo } from 'react';
-import useUser from '@/hooks/useUser';
 import { Card } from '../ui/card';
 import Image from 'next/image';
 import { features, Images } from '@/constants/constants';
+import { useUserContext } from '@/hooks/context/userContext';
 
 const WelcomeChatScreen = () => {
-  const { user } = useUser(true);
+  const { user } = useUserContext();
 
   return (
     <div className="w-full h-full flex justify-center p-2 transition duration-300">

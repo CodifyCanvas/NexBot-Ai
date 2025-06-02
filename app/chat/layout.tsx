@@ -10,6 +10,7 @@ import {
 } from '@/components/ui/sidebar';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { Images, Names } from '@/constants/constants';
+import { UserProvider } from '@/hooks/context/userContext';
 import { cn } from '@/lib/utils';
 import { Separator } from '@radix-ui/react-dropdown-menu';
 import { useTheme } from 'next-themes';
@@ -43,6 +44,7 @@ export default function ChatLayout({ children }: ChatLayoutProps) {
           theme === 'dark' ? 'radial-center-gradient-bg-dark' : 'radial-center-gradient-bg-light'
         )} />
       )}
+      <UserProvider>
 
       {/* <div className="fixed inset-0 -z-10 bg-gradient-to-br from-yellow-300 via-green-400 to-blue-500" /> */}
 
@@ -80,6 +82,7 @@ export default function ChatLayout({ children }: ChatLayoutProps) {
           {children}
         </div>
       </SidebarInset>
+      </UserProvider>
     </SidebarProvider>
   );
 }
