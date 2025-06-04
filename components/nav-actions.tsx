@@ -211,13 +211,8 @@ export function NavActions() {
         </>
       )}
 
-      {/* Mode Toggle or Skeleton */}
-      {loading ? <ToggleThemeSkeleton /> : <ModeToggle />}
+       <ModeToggle />
 
-      {/* Avatar or Skeleton */}
-      {loading ? (
-        <div className="h-8 w-8 rounded-full bg-gray-300 dark:bg-gray-700 animate-pulse" />
-      ) : (
         <Popover open={menuOpen} onOpenChange={setMenuOpen}>
           <PopoverTrigger asChild>
             <Suspense fallback={<ProfileSkeleton />}>
@@ -285,7 +280,6 @@ export function NavActions() {
             </Sidebar>
           </PopoverContent>
         </Popover>
-      )}
     </div>
   );
 }

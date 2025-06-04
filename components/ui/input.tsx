@@ -5,7 +5,7 @@ interface InputProps extends React.ComponentProps<"input"> {
   variant?: "default" | "minimal";
 }
 
-function Input({ className, variant = "default", type, ...props }: InputProps) {
+function Input({ className, variant = "default", type = "text", ...props }: InputProps) {
   const baseStyles =
     "file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground";
 

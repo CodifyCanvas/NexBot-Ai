@@ -16,7 +16,7 @@ export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
 
   const navSecondary = [
     ...(user?.admin
-      ? [{ title: "Admin Dashboard", url: "/admin/dashboard", icon: UserLock }]
+      ? [{ title: "Admin Dashboard", url: "/admin", icon: UserLock }]
       : []),
     { title: "Help", url: "#", icon: MessageCircleQuestion },
   ];

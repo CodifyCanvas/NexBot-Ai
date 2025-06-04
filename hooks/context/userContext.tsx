@@ -20,7 +20,7 @@ interface UserProviderProps {
 
 export const UserProvider: React.FC<UserProviderProps> = ({ children, autoFetch = true }) => {
   const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
 
   const fetchUser = async () => {

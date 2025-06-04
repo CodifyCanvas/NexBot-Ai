@@ -42,7 +42,7 @@ type Props = {
 };
 
 
-const Overview: React.FC<Props> = ({ data, loading = false }) => {
+const StatsCards: React.FC<Props> = ({ data, loading = false }) => {
   if (loading) {
     return (
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -64,7 +64,7 @@ const Overview: React.FC<Props> = ({ data, loading = false }) => {
         return (
           <Card
             key={key}
-            className="@container/card bg-blue-500/10 dark:bg-white/10 backdrop-blur-xl shadow-sm border border-black/10 dark:border-none transition-all duration-300"
+            className="@container/card bg-white dark:bg-white/10 backdrop-blur-xl shadow-sm border border-black/10 dark:border-none transition-all duration-300"
           >
             <CardHeader>
               <CardDescription className="font-medium">{label}</CardDescription>
@@ -83,4 +83,4 @@ const Overview: React.FC<Props> = ({ data, loading = false }) => {
   );
 };
 
-export default Overview;
+export default StatsCards;
