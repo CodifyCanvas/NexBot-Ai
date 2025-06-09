@@ -31,7 +31,6 @@ type NameFormValues = z.infer<typeof nameSchema>;
 
 interface ProfileNameFieldProps {
   onClose: () => void;
-  open: boolean;
 } 
 
 const ProfileNameField: React.FC<ProfileNameFieldProps> = ({ onClose }) => {

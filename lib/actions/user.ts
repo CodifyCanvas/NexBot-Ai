@@ -42,6 +42,15 @@ export async function fetchUser(userId: number) {
   return user || null;
 }
 
+export async function updateUserProfileImage(userId: number, imagePath: string) {
+  const result = await db
+    .update(users)
+    .set({ profileImg: imagePath })
+    .where(eq(users.id, userId));
+
+  return result || null;
+}
+
 export async function updateUserName(userId: number, name: string) {
   const result = await db
       .update(users)

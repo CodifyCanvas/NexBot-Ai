@@ -29,10 +29,10 @@ const ProfileCards: React.FC<ProfileCardsProps> = ({ user }) => {
     <>
       <Dialog open={modalType !== null} onOpenChange={closeModal}>
         <DialogContent className="isolate bg-white/50 dark:bg-white/10 backdrop-blur-xl shadow-lg md:outline-1 outline-white/20 border dark:border-none border-black/10">
-          {modalType === "name" && <ProfileNameField onClose={closeModal} open />}
-          {modalType === "password" && <ProfilePasswordField onClose={closeModal} open />}
-          {modalType === "delete-all-chats" && <DeleteAllChats onClose={closeModal} open />}
-          {modalType === "delete-account" && <DeleteAccountField user={user} onClose={closeModal} open />}
+          {modalType === "name" && <ProfileNameField onClose={closeModal} />}
+          {modalType === "password" && <ProfilePasswordField onClose={closeModal} />}
+          {modalType === "delete-all-chats" && <DeleteAllChats onClose={closeModal} />}
+          {modalType === "delete-account" && <DeleteAccountField user={user} onClose={closeModal} />}
         </DialogContent>
       </Dialog>
 
