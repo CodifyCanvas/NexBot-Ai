@@ -1,3 +1,4 @@
+"use client";
 import React, { memo, useMemo } from 'react';
 import { Card } from '../ui/card';
 import Image from 'next/image';
@@ -43,7 +44,7 @@ const WelcomeScreen = () => {
         <CircleX size={40} />
         <h2 className="text-lg mt-3 font-semibold mb-2">Oops! Something went wrong</h2>
         <p className="text-sm">
-          We couldn’t load your info at the moment. Please refresh the page or come back later.
+          We couldn&apos;t load your info at the moment. Please refresh the page or come back later.
           If the issue continues, reach out to our support team.
         </p>
       </div>

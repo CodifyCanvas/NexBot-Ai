@@ -147,6 +147,10 @@
   }
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 .radial-center-gradient-bg-light {
   background: radial-gradient(circle at top, #f5fbff 20%,#e5f3fd 100%);
 }
@@ -198,3 +202,4 @@
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
   background-color: rgba(100, 100, 100, 0.6);
 }
+

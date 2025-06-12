@@ -1,28 +1,37 @@
-import Link from 'next/link';
-import { Button } from '@/components/ui/button';
-import { Metadata } from 'next';
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { Metadata } from "next";
 
+// Metadata for SEO and browser tab info
 export const metadata: Metadata = {
-  title: "Lost in the Matrix - NexBot 404",
-  description: "Looks like you’ve wandered off track. Let’s get you back to chatting with NexBot!",
+  title: "Oops! Page Not Found — NexBot",
+  description:
+    "Looks like this page took a wrong turn. Return to NexBot and continue your intelligent chat journey.",
 };
 
 export default function NotFound() {
   return (
     <main className="flex h-screen w-full items-center justify-center radial-center-gradient-bg-dark">
       <section className="flex flex-col items-center gap-5 text-center px-4">
+        {/* Large 404 heading */}
         <h1 className="text-9xl font-extrabold uppercase text-white">404</h1>
+
+        {/* Friendly explanation message */}
         <p className="text-white/80 uppercase max-w-lg">
-          We are sorry, but the page you requested was not found.
+          Sorry, the page you’re looking for doesn’t exist.
         </p>
 
+        {/* Navigation buttons */}
         <div className="flex flex-wrap justify-center gap-3">
+          {/* Home button */}
           <Link href="/chat" passHref>
             <Button className="w-40 py-5 uppercase text-white cursor-pointer font-semibold bg-gradient-to-tr from-blue-400 to-blue-700">
               Go Home
             </Button>
           </Link>
-          <Link href="/contact" passHref>
+
+          {/* Contact button */}
+          <Link href="/" passHref>
             <Button
               variant="outline"
               className="w-40 py-5 uppercase cursor-pointer font-semibold backdrop-blur-2xl bg-white/20 text-white"

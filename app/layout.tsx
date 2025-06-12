@@ -1,49 +1,53 @@
 import type { Metadata } from "next";
 import { Open_Sans } from "next/font/google";
 import "./globals.css";
+
 import { ThemeProvider } from "@/components/theme-provider";
-import { Toaster } from "@/components/ui/sonner"
+import { Toaster } from "@/components/ui/sonner";
 import { SessionProvider } from "next-auth/react";
-import { TooltipProvider } from "@/components/ui/tooltip"
+import { TooltipProvider } from "@/components/ui/tooltip";
 import { Images } from "@/constants/constants";
 
-const openSans =Open_Sans({
+// Load Open Sans font with CSS variable for consistent usage across app
+const openSans = Open_Sans({
   variable: "--font-open-sans",
   subsets: ["latin"],
 });
 
+// Metadata for SEO and page info, including favicon
 export const metadata: Metadata = {
-  title: "NexBot",
-  description: "AI-Powered Chatbot",
+  title: "NexBot — Smarter AI Conversations",
+  description:
+    "Experience NexBot, the AI-powered chatbot that transforms communication, boosts creativity, and simplifies your workflow with intelligent, natural text-based interactions.",
   icons: {
     icon: `${Images.main_logo_transparent}`,
   },
 };
 
+// RootLayout wraps the entire app and provides global providers and styles
 export default function RootLayout({
   children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+}: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en" suppressHydrationWarning>
       <body
         className={`${openSans.variable} antialiased`}
-        cz-shortcut-listen="true"
+        cz-shortcut-listen="true" // Chrome extension compatibility attribute
       >
         <SessionProvider>
-        <ThemeProvider
+          <ThemeProvider
             attribute="class"
-            defaultTheme="system"
+            defaultTheme="dark"
             enableSystem
             disableTransitionOnChange
-          ><TooltipProvider>
-            {children}
-            <Toaster />
-          </TooltipProvider>
+          >
+            <TooltipProvider>
+              {children}
+              {/* Global toast notifications */}
+              <Toaster />
+            </TooltipProvider>
           </ThemeProvider>
-          </SessionProvider>
-
+        </SessionProvider>
       </body>
     </html>
   );

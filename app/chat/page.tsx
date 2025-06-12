@@ -1,25 +1,29 @@
 // app/chat/page.tsx
-"use client";
-
 import ChatInput from "@/components/custom/ChatInput";
 import WelcomeChatScreen from "@/components/custom/WelcomeChatScreen";
+import { Metadata } from "next";
 
-export default function Page() {
+// Metadata for SEO and browser tab title
+export const metadata: Metadata = {
+  title: "New Chat — Start Smarter AI Conversations — NexBot",
+  description:
+    "Welcome to NexBot chat! Begin your AI-powered conversation, get instant responses, and unlock smarter, natural text-based interactions to boost your creativity and productivity.",
+};
 
+export default function ChatPage() {
   return (
-    <div className="flex flex-col w-full h-full bg-transparent relative transition-all duration-300">
-
-      <div className="flex-1">
+    <div className="relative flex flex-col w-full h-full bg-transparent transition-all duration-300">
+      {/* Main content area: user welcome screen */}
+      <main className="flex-1">
         <WelcomeChatScreen />
-      </div>
+      </main>
 
-      <div className="absolute bottom-1 flex w-full justify-center">
-        <div className="w-full max-w-3xl pb-3 px-1 sm:px-3">
+      {/* Chat input fixed at the bottom center */}
+      <footer className="absolute bottom-1 left-0 right-0 flex justify-center">
+        <div className="w-full max-w-3xl px-1 pb-3 sm:px-3">
           <ChatInput />
         </div>
-      </div>
+      </footer>
     </div>
   );
 }
-
-

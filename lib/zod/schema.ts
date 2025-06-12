@@ -35,3 +35,10 @@ export const imageSchema = z.object({
     .refine(file => file.size <= 5 * 1024 * 1024, "Image must be smaller than 5MB")
     .refine(file => ["image/jpeg", "image/png", "image/gif"].includes(file.type), "Unsupported image format"),
 });
+
+// ✅ Zod schema for validation
+export const contactUsFormSchema = z.object({
+  name: z.string().min(2, 'Name must be at least 2 characters'),
+  email: z.string().email('Invalid email address'),
+  message: z.string().min(5, 'Message must be at least 5 characters'),
+});

@@ -211,28 +211,33 @@ export function NavActions() {
         </>
       )}
 
-       <ModeToggle />
+      <ModeToggle />
 
-        <Popover open={menuOpen} onOpenChange={setMenuOpen}>
-          <PopoverTrigger asChild>
-            <Suspense fallback={<ProfileSkeleton />}>
-              <div
-                role="button"
-                className='h-8 w-8 rounded-full flex items-center justify-center cursor-pointer'
-              >
-                <Avatar>
-                  <AvatarImage src={user?.profileImg} />
-                  <AvatarFallback className={getColorByLetter(user?.name || 's')}>
-                    {user?.name ? user.name.charAt(0).toUpperCase() : 'S'}
-                  </AvatarFallback>
-                </Avatar>
-              </div>
-            </Suspense>
-          </PopoverTrigger>
+      <Popover open={menuOpen} onOpenChange={setMenuOpen}>
+        <PopoverTrigger asChild>
+          {loading || !user ? (
+            <button type="button" className="h-8 w-8 rounded-full flex items-center justify-center">
+              <ProfileSkeleton />
+            </button>
+          ) : (
+            <button
+              type="button"
+              className="h-8 w-8 rounded-full flex items-center justify-center cursor-pointer"
+            >
+              <Avatar>
+                <AvatarImage src={user.profileImg} />
+                <AvatarFallback className={getColorByLetter(user.name)}>
+                  {user.name.charAt(0).toUpperCase()}
+                </AvatarFallback>
+              </Avatar>
+            </button>
+          )}
+        </PopoverTrigger>
 
-          <PopoverContent className="w-56 p-0 isolate bg-white/10 backdrop-blur-xl shadow-lg outline-1 outline-white/20" align="end">
-            <Sidebar collapsible="none" className="bg-transparent">
-              <SidebarContent>
+        <PopoverContent className="w-56 p-0 isolate bg-white/10 backdrop-blur-xl shadow-lg outline-1 outline-white/20" align="end">
+          <Sidebar collapsible="none" className="bg-transparent">
+            <SidebarContent>
+              {user &&
                 <SidebarGroup className="border-b">
                   <SidebarGroupContent>
                     <SidebarMenu>
@@ -244,42 +249,43 @@ export function NavActions() {
                     </SidebarMenu>
                   </SidebarGroupContent>
                 </SidebarGroup>
-                {chatId &&
-                  <SidebarGroup className="-mt-2 border-b">
-                    <SidebarGroupContent>
-                      <SidebarMenu>
-                        <SidebarMenuItem>
-                          <SidebarMenuButton onClick={() => handleCopyLink(chatId)} className='bg-transparent hover:bg-blue-300 dark:bg-transparent active:bg-blue-400 dark:hover:bg-blue-200/20 dark:active:bg-blue-200/30'>
-                            <Link /> <span>Copy Link</span>
-                          </SidebarMenuButton>
-                        </SidebarMenuItem>
-                      </SidebarMenu>
-                    </SidebarGroupContent>
-                  </SidebarGroup>}
-                <SidebarGroup className="-mt-2">
+              }
+              {chatId &&
+                <SidebarGroup className="-mt-2 border-b">
                   <SidebarGroupContent>
                     <SidebarMenu>
                       <SidebarMenuItem>
-                        <ConfirmationDialog
-                          title="Sign out?"
-                          description="You will be signed out of your NexBot account."
-                          confirmButtonLabel="Yes, Sign out"
-                          onConfirm={handleSignOut}
-                          confirmButtonClassName="danger_button"
-                        >
-                          <div className="w-full text-destructive flex items-center gap-1 cursor-pointer px-3 py-2 hover:bg-red-300/40 dark:hover:bg-red-400/25 dark:hover:text-red-500 rounded-md text-sm">
-                            <LogOut size={17} /> <span>Log out</span>
-                          </div>
-                        </ConfirmationDialog>
+                        <SidebarMenuButton onClick={() => handleCopyLink(chatId)} className='bg-transparent hover:bg-blue-300 dark:bg-transparent active:bg-blue-400 dark:hover:bg-blue-200/20 dark:active:bg-blue-200/30'>
+                          <Link /> <span>Copy Link</span>
+                        </SidebarMenuButton>
                       </SidebarMenuItem>
                     </SidebarMenu>
                   </SidebarGroupContent>
-                </SidebarGroup>
+                </SidebarGroup>}
+              <SidebarGroup>
+                <SidebarGroupContent>
+                  <SidebarMenu>
+                    <SidebarMenuItem>
+                      <ConfirmationDialog
+                        title="Sign out?"
+                        description="You will be signed out of your NexBot account."
+                        confirmButtonLabel="Yes, Sign out"
+                        onConfirm={handleSignOut}
+                        confirmButtonClassName="danger_button"
+                      >
+                        <div className="w-full text-destructive flex items-center gap-1 cursor-pointer px-3 py-2 hover:bg-red-300/40 dark:hover:bg-red-400/25 dark:hover:text-red-500 rounded-md text-sm">
+                          <LogOut size={17} /> <span>Log out</span>
+                        </div>
+                      </ConfirmationDialog>
+                    </SidebarMenuItem>
+                  </SidebarMenu>
+                </SidebarGroupContent>
+              </SidebarGroup>
 
-              </SidebarContent>
-            </Sidebar>
-          </PopoverContent>
-        </Popover>
+            </SidebarContent>
+          </Sidebar>
+        </PopoverContent>
+      </Popover>
     </div>
   );
 }

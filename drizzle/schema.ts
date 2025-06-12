@@ -40,6 +40,14 @@ export const messages = mysqlTable('messages', {
   createdAt: datetime('created_at').default(sql`CURRENT_TIMESTAMP`).notNull(),
 });
 
-
+// Contact us Table
+export const contactUs = mysqlTable('contact_us', {
+  id: int('id').primaryKey().autoincrement(),
+  name: varchar('name', { length: 255 }).notNull(),
+  email: varchar('email', { length: 255 }).notNull(),
+  message: text('message').notNull(),
+  respondedAt: datetime('responded_at'), // if NULL = not responded
+  createdAt: datetime('created_at').default(sql`CURRENT_TIMESTAMP`).notNull(),
+});
 
 
