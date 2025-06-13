@@ -26,8 +26,8 @@ export async function generateMetadata({
 
   if (!chatId) {
     return {
-      title: 'Loading...',
-      description: 'Loading conversation...',
+      title: 'Loading Your Chat | NexBot',
+      description: `Hang tight! We're loading your conversation so you can get back to chatting on NexBot.`,
     };
   }
 
@@ -42,6 +42,20 @@ export async function generateMetadata({
       headers: { Cookie: cookieHeader },
       cache: 'no-store',
     });
+
+    if (res.status === 404) {
+      return {
+        title: 'Chat Not Found | NexBot',
+        description: `Hmm, we couldn't find that chat. It might have been deleted or the link is incorrect. Try checking again or start a new conversation on NexBot!`,
+      };
+    }
+
+    if (res.status === 403) {
+      return {
+        title: 'Oops! This Chat is Private | NexBot',
+        description: "Looks like you don't have permission to view this chat.",
+      };
+    }
 
     if (!res.ok) throw new Error(`Failed to fetch metadata: ${res.status}`);
 
@@ -60,6 +74,7 @@ export async function generateMetadata({
     };
   }
 }
+
 
 export default async function ChatPage({
   params,

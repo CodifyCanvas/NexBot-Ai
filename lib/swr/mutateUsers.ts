@@ -6,3 +6,7 @@ import { mutate } from 'swr';
 export function refetchUsers() {
   mutate('/api/user/all');
 }
+
+export function refetchContactMessages() {
+  mutate('/api/contact');
+}

@@ -129,7 +129,6 @@ export function NavActions() {
   }, [chatId]);
 
   if (error) {
-    console.error(error);
     return null;
   }
 

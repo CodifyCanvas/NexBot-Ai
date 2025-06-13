@@ -7,8 +7,15 @@ import { ShowUserInfo } from "./show-user-info"
 interface UserDetailsSheetProps {
   open: boolean
   onClose: () => void
-  userId: string | null
+  userId: string | number | null
 }
+
+/**
+ * UserDetailsSheet
+ *
+ * A slide-over panel from the right that displays detailed info about a user.
+ * Shows a placeholder message if no user is selected.
+ */ 
 
 export function UserDetailsSheet({ open, onClose, userId }: UserDetailsSheetProps) {
   return (

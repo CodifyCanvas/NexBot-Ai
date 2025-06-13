@@ -5,7 +5,8 @@ import { auth } from "@/auth";
 import { DeleteChat, fetchChat } from "@/lib/actions/chat"; // Assuming your DeleteChat is defined here
 
 export async function GET(
-  req: NextRequest, context: { params: { chatId: string } }
+  req: NextRequest,
+  context: { params: { chatId: string } }
 ) {
   try {
     // 1. Authenticate the user
@@ -16,16 +17,26 @@ export async function GET(
     }
 
     const { chatId } = await context.params;
+    const userId = Number(session.user.id);
 
     // 2. Attempt to fetch the chat
     const chat = await fetchChat(chatId);
 
-    // 3. Check if chat is found and return it
-    if (chat?.length > 0) {
-      return NextResponse.json(chat[0], { status: 200 });
-    } else {
-      // 4. If chat not found
+    // 3. Check if chat is found
+    if (!chat || chat.length === 0) {
       return NextResponse.json({ message: "Chat not found" }, { status: 404 });
+    }
+
+    const chatData = chat[0];
+
+    // 4. Check access permission
+    const isOwner = chatData.userId === userId;
+    const isSharable = chatData.isShareable;
+
+    if (isOwner || isSharable) {
+      return NextResponse.json(chatData, { status: 200 });
+    } else {
+      return NextResponse.json({ message: "This chat is private" }, { status: 403 });
     }
 
   } catch (err) {

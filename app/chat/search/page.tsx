@@ -15,9 +15,10 @@ const SearchPage = () => {
       
       {/* Page Heading */}
       <div className="text-center z-20 mt-5 flex flex-col items-center gap-2">
-        <h1 className="text-xl sm:text-2xl md:text-3xl text-blue-500 dark:text-blue-500/90 font-semibold">
-          Find the Right Chat, Right Away
-        </h1>
+        <h1 className="text-xl sm:text-2xl h-11 md:text-3xl lg:text-4xl text-black/75 dark:text-white/90 font-semibold">
+  Find the Right Chat, Right Away
+</h1>
+
         <p className="text-xs md:text-sm lg:text-base text-neutral-400 px-4">
           No more endless scrolling—search and rediscover your AI chat titles instantly.
         </p>

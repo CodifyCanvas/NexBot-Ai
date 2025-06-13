@@ -1,81 +1,75 @@
-"use client";
+'use client';
 
-import React, { createContext, useContext, useState, useEffect, ReactNode } from "react";
-import { User } from "@/lib/definations";
+import React, { createContext, useContext, ReactNode, useCallback } from 'react';
+import useSWR from 'swr';
+import { User } from '@/lib/definations';
 
+// Define the shape of our context
 interface UserContextType {
   user: User | null;
   loading: boolean;
   error: Error | null;
-  refetch: () => Promise<void>;
+  refetch: () => void;
   reset: () => void;
 }
 
+// Create the UserContext
 const UserContext = createContext<UserContextType | undefined>(undefined);
 
+// Props for the provider
 interface UserProviderProps {
   children: ReactNode;
-  autoFetch?: boolean;
 }
 
-export const UserProvider: React.FC<UserProviderProps> = ({ children, autoFetch = true }) => {
-  const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<Error | null>(null);
+// Fetcher function used by SWR
+const fetchUser = async (): Promise<User> => {
+  const res = await fetch('/api/user', {
+    headers: { 'Content-Type': 'application/json' },
+  });
 
-  const fetchUser = async () => {
-    try {
-      setLoading(true);
-      setError(null);
+  if (!res.ok) {
+    throw new Error('Failed to fetch user');
+  }
 
-      const response = await fetch("/api/user", {
-        method: "GET",
-        headers: { "Content-Type": "application/json" },
-      });
+  return res.json();
+};
 
-      if (!response.ok) {
-        throw new Error(`Failed to fetch user: ${response.statusText}`);
-      }
+// Context Provider Component
+export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
+  const { data: user, error, isLoading, mutate } = useSWR<User>('/api/user', fetchUser);
 
-      const data: User = await response.json();
-      setUser(data);
-    } catch (err) {
-      setError(
-        err instanceof Error
-          ? err
-          : new Error(
-            "🚧 Uh-oh! We ran into a glitch while loading your info. Please contact the developer if this keeps happening."
-          )
-      );
-    } finally {
-      setLoading(false);
-    }
-  };
+  // Reset context state without refetching
+  const reset = useCallback(() => {
+    mutate(null, false);
+  }, [mutate]);
 
-  const reset = () => {
-    setUser(null);
-    setLoading(false);
-    setError(null);
-  };
-
-  useEffect(() => {
-    if (autoFetch) {
-      fetchUser();
-    }
-  }, []);
+  // Trigger a manual revalidation
+  const refetch = useCallback(() => {
+    mutate();
+  }, [mutate]);
 
   return (
-    <UserContext.Provider value={{ user, loading, error, refetch: fetchUser, reset }}>
+    <UserContext.Provider
+      value={{
+        user: user ?? null,
+        loading: isLoading,
+        error: error ?? null,
+        refetch,
+        reset,
+      }}
+    >
       {children}
     </UserContext.Provider>
   );
 };
 
-// Custom hook for using user context easily
-export const useUserContext = () => {
+// Hook to consume UserContext
+export const useUserContext = (): UserContextType => {
   const context = useContext(UserContext);
+
   if (!context) {
-    throw new Error("useUserContext must be used within a UserProvider");
+    throw new Error('useUserContext must be used within a UserProvider');
   }
+
   return context;
 };

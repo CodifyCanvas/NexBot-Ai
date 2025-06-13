@@ -14,42 +14,53 @@ import {
 } from '@/components/ui/alert-dialog';
 import { toast } from 'sonner';
 import { CircleCheck } from 'lucide-react';
-import { refetchUsers } from '@/lib/swr/mutateUsers';
 
-interface DeleteUserDialogButtonProps {
-  userId: string;
+interface DeleteRowDialogButtonProps {
+  id: number | string;                   // ID of item to delete
+  entityName: string;                    // e.g. 'user' or 'message', used for UI text
+  apiBasePath: string;                   // e.g. '/api/user' or '/api/contact'
+  refetchData: () => void;               // function to refresh data after successful deletion
+  buttonLabel?: string;                  // optional custom button label, defaults to 'Delete'
+  confirmDescription?: string;           // optional description in the dialog
 }
 
-export function DeleteUserDialogButton({ userId }: DeleteUserDialogButtonProps) {
+/**
+ * Reusable delete confirmation dialog button.
+ * Handles deletion of different entity types by passing relevant props.
+ */
+export function DeleteRowDialogButton({
+  id,
+  entityName,
+  apiBasePath,
+  refetchData,
+  buttonLabel = 'Delete',
+  confirmDescription,
+}: DeleteRowDialogButtonProps) {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const handleDelete = async () => {
     setLoading(true);
-
     try {
-      const response = await fetch(`/api/user/${userId}`, {
-        method: 'DELETE',
-      });
+      const response = await fetch(`${apiBasePath}/${id}`, { method: 'DELETE' });
 
       if (!response.ok) {
-        throw new Error(`Server responded with ${response.status}`);
+        throw new Error(`Server responded with status ${response.status}`);
       }
 
       toast.custom(() => (
         <div className="isolate p-4 w-80 bg-green-300/50 flex-row dark:bg-green-300/20 backdrop-blur-2xl shadow-lg md:outline outline-1 outline-white/20 border dark:border-none border-black/10 rounded-md flex items-center gap-2">
           <CircleCheck size={17} className="text-green-800 dark:text-green-300" />
           <span className="font-semibold text-sm text-green-800 dark:text-green-300 truncate">
-            User deleted successfully!
+            {entityName.charAt(0).toUpperCase() + entityName.slice(1)} deleted successfully!
           </span>
         </div>
       ), { position: 'top-center' });
 
-      refetchUsers();
-
+      refetchData();      // Refresh data list after deletion
     } catch (error) {
-      console.error('Error deleting user:', error);
-      toast.error('Failed to delete user. Please try again or check the console.', {
+      console.error(`Error deleting ${entityName}:`, error);
+      toast.error(`Failed to delete ${entityName}. Please try again or check the console.`, {
         richColors: true,
       });
     } finally {
@@ -61,8 +72,11 @@ export function DeleteUserDialogButton({ userId }: DeleteUserDialogButtonProps) 
   return (
     <AlertDialog open={open} onOpenChange={setOpen}>
       <AlertDialogTrigger asChild>
-        <button className="text-red-400 hover:text-red-500 cursor-pointer font-medium hover:underline transition-colors">
-          Delete User
+        <button
+          className="text-red-400 hover:text-red-500 cursor-pointer font-medium hover:underline transition-colors"
+          aria-label={`Delete ${entityName}`}
+        >
+          {buttonLabel}
         </button>
       </AlertDialogTrigger>
 
@@ -70,7 +84,8 @@ export function DeleteUserDialogButton({ userId }: DeleteUserDialogButtonProps) 
         <AlertDialogHeader>
           <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
           <AlertDialogDescription>
-            This action cannot be undone. This will permanently delete the user and all associated data.
+            {confirmDescription ||
+              `This action cannot be undone. This will permanently delete the ${entityName}.`}
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
@@ -80,7 +95,7 @@ export function DeleteUserDialogButton({ userId }: DeleteUserDialogButtonProps) 
             disabled={loading}
             className="danger_button"
           >
-            {loading ? 'Deleting...' : 'Yes, Delete'}
+            {loading ? 'Deleting...' : `Yes, Delete`}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

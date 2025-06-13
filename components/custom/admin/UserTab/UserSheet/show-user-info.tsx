@@ -9,10 +9,8 @@ import {
   PointElement,
   Tooltip,
   Legend,
-  BarElement,
 } from 'chart.js';
-import { Bar, Line } from 'react-chartjs-2';
-import Image from 'next/image';
+import {  Line } from 'react-chartjs-2';
 
 import {
   Select,

@@ -14,13 +14,7 @@ import {
   Send,
 } from 'lucide-react';
 import StatsCardsFallback from '@/components/Skeletons/StatsCardsFallback';
-
-type AdminStats = {
-  totalUsers: number;
-  ActiveUsers: number;
-  TotalChats: number;
-  TotalMessages: number;
-};
+import { AdminStats } from '@/lib/definations';
 
 const iconMap = {
   totalUsers: Users,
@@ -37,7 +31,7 @@ const cardData = [
 ];
 
 type Props = {
-  data?: AdminStats;
+  data?: AdminStats | undefined;
   loading?: boolean;
 };
 
