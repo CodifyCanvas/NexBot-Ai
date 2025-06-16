@@ -13,7 +13,7 @@ interface FeatureCardProps {
   hasImage?: boolean;
   labelsRef?: React.Ref<HTMLDivElement>;
 }
-
+ 
 const FeatureCard = forwardRef<HTMLDivElement, FeatureCardProps>(
   ({ title, subtitle, description, imageSrc, imageAlt, hasImage = false, labelsRef }, ref) => {
     return (
@@ -64,7 +64,7 @@ const FeatureCard = forwardRef<HTMLDivElement, FeatureCardProps>(
               className="absolute z-10 w-full h-full top-0 left-0 pointer-events-none"
             >
               {/* Top Left Label */}
-              <div className="absolute top-10 -left-10 hidden md:flex items-start gap-3">
+              <div className="absolute opacity-0 top-10 -left-10 hidden md:flex items-start gap-3">
                 <div className="px-4 py-2 flex items-center gap-3 bg-white/5 backdrop-blur-md outline outline-blue-500 text-white/85 rounded-full text-sm font-semibold">
                   <Sparkles className="text-blue-500" size={17} />
                   Enter Your Prompt

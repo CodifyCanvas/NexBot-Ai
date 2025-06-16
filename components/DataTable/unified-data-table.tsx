@@ -111,7 +111,7 @@ export function UnifiedDataTable<TData, TValue>({
         <Table className="w-full border-separate border-spacing-y-2">
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id}>
+              <TableRow className='bg-transparent hover:bg-blue-500/20 transition-colors' key={headerGroup.id}>
                 {headerGroup.headers.map((header) => (
                   <TableHead key={header.id}>
                     {header.isPlaceholder
@@ -158,10 +158,16 @@ export function UnifiedDataTable<TData, TValue>({
                   })}
                 </TableRow>
               ))
+            ) : globalFilter ? (
+              <TableRow>
+                <TableCell colSpan={columns.length} className="h-24 bg-transparent hover:bg-sky-300/10 text-center">
+                  No results for &quot;<strong>{globalFilter}</strong>&quot;. Try different keywords!
+                </TableCell>
+              </TableRow>
             ) : (
               <TableRow>
-                <TableCell colSpan={columns.length} className="h-24 text-center">
-                  No results.
+                <TableCell colSpan={columns.length} className="h-24 bg-transparent hover:bg-sky-300/10 text-center">
+                 Whoops! No records found.
                 </TableCell>
               </TableRow>
             )}

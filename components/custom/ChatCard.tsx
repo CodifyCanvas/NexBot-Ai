@@ -4,13 +4,14 @@ import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 import ReactMarkdown from 'react-markdown';
 import rehypeSanitize from 'rehype-sanitize';
 import remarkGfm from 'remark-gfm';
-import useUser from '@/hooks/useUser';
 import { cn, getColorByLetter } from '@/lib/utils';
 import { Copy } from 'lucide-react';
+import { useUserContext } from '@/hooks/context/userContext';
 
 interface ChatProp {
   message: string;
   sender: 'user' | 'bot';
+  profileImg?: boolean; // optional if it might not always be included
 }
 
 interface ChatCardProps {
@@ -18,7 +19,7 @@ interface ChatCardProps {
 }
 
 const ChatCard: React.FC<ChatCardProps> = ({ messages }) => {
-  const { user } = useUser();
+  const { user } = useUserContext();
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
 
   const handleCopy = (text: string, index: number) => {
@@ -27,11 +28,36 @@ const ChatCard: React.FC<ChatCardProps> = ({ messages }) => {
     setTimeout(() => setCopiedIndex(null), 1500);
   };
 
+  const renderCopyButton = (message: string, index: number, isUser: boolean, isOwner: boolean) => {
+  const padding = isOwner
+    ? isUser ? 'sm:pr-12' : 'sm:pl-12'
+    : isUser ? 'sm:pr-3' : 'sm:pl-3';
+
+  return (
+    <div className={cn('w-full flex mt-1', isUser ? 'justify-end' : 'justify-start')}>
+      <button
+        onClick={() => handleCopy(message, index)}
+        className={cn(
+          'p-1 text-gray-600 hover:text-gray-950 dark:text-white/70 dark:hover:text-white transition flex items-center gap-1',
+          padding
+        )}
+        aria-label="Copy message"
+      >
+        <Copy size={15} />
+        {copiedIndex === index && (
+          <span className="text-green-800 dark:text-green-300 text-xs">Copied!</span>
+        )}
+      </button>
+    </div>
+  );
+};
+
 
   return (
     <div className="w-full space-y-5 mt-10">
       {messages.map((chatItem, index) => {
         const isUser = chatItem.sender === 'user';
+        const isOwner = chatItem.profileImg;
 
         return (
           <div
@@ -39,7 +65,7 @@ const ChatCard: React.FC<ChatCardProps> = ({ messages }) => {
             className={`flex flex-col w-full px-3 ${isUser ? 'items-end' : 'items-start'}`}
           >
             <div className={`flex gap-2 w-full justify-start ${isUser ? 'flex-row-reverse' : ''}`}>
-              <Avatar className="mt-1 hidden sm:block">
+              {isOwner && <Avatar className="mt-1 hidden sm:block">
                 <AvatarImage
                   src={isUser ? user?.profileImg : '/assets/images/main_logo_transparent.png'}
                   alt="avatar"
@@ -48,11 +74,13 @@ const ChatCard: React.FC<ChatCardProps> = ({ messages }) => {
                   {(user?.name || chatItem.sender).charAt(0).toUpperCase()}
                 </AvatarFallback>
               </Avatar>
+              }
+              
 
               <Card
                 className={`py-2 w-fit max-w-[90%] sm:max-w-[80%] break-words ${isUser
-                    ? 'bg-gradient-to-tr px-4 py-2 from-blue-500/80 to-blue-600/90 dark:from-blue-500/75 dark:to-blue-800 saturate-100 brightness-110 backdrop-blur-xl rounded-br-4xl rounded-l-4xl rounded-tr-none'
-                    : 'border-none shadow-none bg-transparent outline-none'
+                  ? 'bg-gradient-to-tr px-4 py-2 from-blue-500/80 to-blue-600/90 dark:from-blue-500/75 dark:to-blue-800 saturate-100 brightness-110 backdrop-blur-xl rounded-br-4xl rounded-l-4xl rounded-tr-none'
+                  : 'border-none shadow-none bg-transparent outline-none'
                   }`}
               >
                 {isUser ? (
@@ -99,17 +127,28 @@ const ChatCard: React.FC<ChatCardProps> = ({ messages }) => {
                         <strong className="font-semibold text-blue-500">{children}</strong>
                       ),
                       p({ node, children, ...props }) {
-                        const containsBlockCode = node.children?.some(
-                          (child: any) =>
-                            child.tagName === 'pre' || (child.tagName === 'code' && !child.properties?.inline)
+                        const hasOnlyText = node.children.every(
+                          (child: any) => child.type === 'text'
                         );
-                        if (containsBlockCode) return <>{children}</>;
-                        return (
-                          <p className={cn("text-sm sm:text-base mb-2", isUser ? 'text-white' : 'text-black dark:text-white')} {...props}>
-                            {children}
-                          </p>
-                        );
-                      },
+
+                        // If it contains only plain text or inline elements, wrap in <p>
+                        if (hasOnlyText) {
+                          return (
+                            <p
+                              className={cn(
+                                'text-sm sm:text-base mb-2',
+                                isUser ? 'text-white' : 'text-black dark:text-white'
+                              )}
+                              {...props}
+                            >
+                              {children}
+                            </p>
+                          );
+                        }
+
+                        // Otherwise, just render children directly to avoid invalid nesting
+                        return <>{children}</>;
+                      }
                     }}
                   >
                     {chatItem.message}
@@ -119,17 +158,7 @@ const ChatCard: React.FC<ChatCardProps> = ({ messages }) => {
             </div>
 
             {/* Copy button below card, aligned right */}
-            <div className={`w-full flex ${isUser ? 'justify-end' : 'justify-start'} mt-1`}>
-              <button
-                onClick={() => handleCopy(chatItem.message, index)}
-                className={cn("p-1 text-gray-600 hover:text-gray-950  dark:text-white/70 dark:hover:text-white transition flex items-center gap-1", isUser ? 'sm:pr-12' : 'sm:pl-12')}
-                aria-label="Copy message"
-
-              >
-                <Copy size={15} />
-                {copiedIndex === index && <span className="text-green-800 dark:text-green-300 text-xs">Copied!</span>}
-              </button>
-            </div>
+            {renderCopyButton(chatItem.message, index, isUser, isOwner)}
           </div>
         );
       })}

@@ -25,45 +25,45 @@ export default function HeroSection() {
 
     // Animate labels (fade and slide)
     tl.fromTo(
-  labelsRef.current.children,
-  { y: 20, opacity: 0 },
-  { y: 0, opacity: 1, stagger: 0.2, duration: 0.5 },
-  "-=0.5"
-);
+      labelsRef.current.children,
+      {y: 20, opacity: 0},
+      {y: 0, opacity: 1, stagger: 0.2, duration: 0.5 },
+      "-=0.5"
+    );
 
 
     // Animate heading
     tl.fromTo(
-  headingRef.current.children,
-  { scale: 0.75, opacity: 0 },
-  { scale: 1, opacity: 1, stagger: 0.2, duration: 0.5 },
-  "-=0.4"
-);
+      headingRef.current.children,
+      { scale: 0.75, opacity: 0 },
+      { scale: 1, opacity: 1, stagger: 0.2, duration: 0.5 },
+      "-=0.4"
+    );
 
     // Animate description
     tl.fromTo(
-  descriptionRef.current,
-  { y: -20, opacity: 0 },
-  { y: 0, opacity: 1, duration: 0.5 },
-  "-=0.2"
-);
+      descriptionRef.current,
+      { y: -20, opacity: 0 },
+      { y: 0, opacity: 1, duration: 0.5 },
+      "-=0.2"
+    );
 
-// Animate button
-tl.fromTo(
-  buttonRef.current,
-  { scale: 0.8, opacity: 0 },
-  { scale: 1, opacity: 1, stagger: 0.2, duration: 0.6 },
-  "-=0.2"
-);
+    // Animate button
+    tl.fromTo(
+      buttonRef.current,
+      { scale: 0.8, opacity: 0 },
+      { scale: 1, opacity: 1, stagger: 0.2, duration: 0.6 },
+      "-=0.2"
+    );
 
   }, []);
 
   return (
     <section
-  id="home"
-  ref={sectionRef}
-  className="scroll-mt-[100px] w-full relative min-h-[calc(100vh-60px)] flex flex-col items-center justify-center text-center text-white px-5"
->
+      id="home"
+      ref={sectionRef}
+      className="scroll-mt-[100px] w-full relative min-h-[calc(100vh-60px)] flex flex-col items-center justify-center text-center text-white px-5"
+    >
       {/* Background Gradient Circles */}
       <div className="absolute z-0 w-full h-full opacity-70">
         <div className="absolute z-0 left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 w-80 h-80 rounded-full bg-gradient-to-br from-blue-500 to-blue-900 opacity-60 blur-2xl pointer-events-none"></div>
@@ -139,20 +139,20 @@ tl.fromTo(
             outcomes.
           </p>
           <Link href='/chat'>
-          <button
-            ref={buttonRef}
-            className="cursor-pointer  bg-gradient-to-b from-blue-400 to-blue-600 shadow-[0px_4px_32px_0_rgba(99,102,241,.70)] px-8 py-2 rounded-xl border-[1px] border-blue-800 text-white font-medium group"
+            <button
+              ref={buttonRef}
+              className="cursor-pointer  bg-gradient-to-b from-blue-400 to-blue-600 shadow-[0px_4px_32px_0_rgba(99,102,241,.70)] px-8 py-2 rounded-xl border-[1px] border-blue-800 text-white font-medium group"
             >
-            <div className="relative overflow-hidden">
-              <p className="group-hover:-translate-y-7 duration-[1.125s] ease-[cubic-bezier(0.19,1,0.22,1)]">
-                Get Started
-              </p>
-              <p className="absolute top-7 left-0 group-hover:top-0 duration-[1.125s] ease-[cubic-bezier(0.19,1,0.22,1)]">
-                Get Started
-              </p>
-            </div>
-          </button>
-            </Link>
+              <div className="relative overflow-hidden">
+                <p className="group-hover:-translate-y-7 duration-[1.125s] ease-[cubic-bezier(0.19,1,0.22,1)]">
+                  Get Started
+                </p>
+                <p className="absolute top-7 left-0 group-hover:top-0 duration-[1.125s] ease-[cubic-bezier(0.19,1,0.22,1)]">
+                  Get Started
+                </p>
+              </div>
+            </button>
+          </Link>
         </div>
       </div>
     </section>

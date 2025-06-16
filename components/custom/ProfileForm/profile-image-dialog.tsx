@@ -111,11 +111,11 @@ const ProfileImageDialog: React.FC<Props> = ({ onClose }) => {
 
         <div className="flex justify-center">
           {previewUrl ? (
-            <div className="relative w-60 h-60 rounded border border-gray-300 dark:border-gray-600 overflow-hidden">
+            <div className="relative w-60 h-60 rounded-lg outline outline-gray-300 dark:outline-gray-600 overflow-hidden">
               <Image src={previewUrl} alt="New preview" fill style={{ objectFit: "cover" }} priority />
             </div>
           ) : user?.profileImg ? (
-            <div className="relative w-60 h-60 rounded border border-gray-300 dark:border-gray-600 overflow-hidden">
+            <div className="relative w-60 h-60 rounded-lg outline outline-gray-300 dark:outline-gray-600 overflow-hidden">
               <Image src={user.profileImg} alt="Current profile" fill style={{ objectFit: "cover" }} priority />
             </div>
           ) : (
@@ -141,7 +141,7 @@ const ProfileImageDialog: React.FC<Props> = ({ onClose }) => {
                         const file = e.target.files?.[0] || null;
                         field.onChange(file);
                       }}
-                      className="cursor-pointer text-gray-300 h-10 w-full bg-white/5 backdrop-blur-xl rounded content-center px-3"
+                      className="cursor-pointer text-gray-300 h-10 w-full bg-white/5 backdrop-blur-xl rounded-lg content-center px-3"
                     />
                   </FormControl>
                   <FormMessage />
@@ -151,14 +151,14 @@ const ProfileImageDialog: React.FC<Props> = ({ onClose }) => {
 
             <DialogFooter className="mt-5 flex flex-row justify-end gap-3">
               <DialogClose asChild>
-                <Button type="button" variant="outline" className="bg-white/40 w-28 dark:bg-white/5">
+                <Button type="button" variant="outline" className="w-1/2 bg-white/40 sm:w-28 dark:bg-white/5">
                   Cancel
                 </Button>
               </DialogClose>
               <Button
                 type="submit"
                 disabled={isUploading}
-                className="w-28 text-white bg-gradient-to-tr from-blue-500 to-blue-800 hover:from-blue-700 hover:to-blue-800 transition-all duration-300"
+                className="w-1/2 sm:w-28 text-white bg-gradient-to-tr from-blue-500 to-blue-800 hover:from-blue-700 hover:to-blue-800 transition-all duration-300"
               >
                 {isUploading ? <Spinner /> : "Upload"}
               </Button>

@@ -38,13 +38,15 @@ export const columns: ColumnDef<User>[] = [
 
   // ✅ User ID (conditionally responsive)
   {
-    accessorKey: 'id',
-    responsive: 'sm', // custom field for filtering based on screen size
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="ID" />
-    ),
-    cell: ({ row }) => <span className="font-medium">{row.original.id}</span>,
-  },
+  accessorKey: 'id',
+  responsive: 'sm',
+  header: ({ column }) => (
+    <DataTableColumnHeader column={column} title="#" />
+  ),
+  cell: ({ row }) => (
+    <span className="font-medium">{row.index + 1}</span>
+  ),
+},
 
   // ✅ User name with avatar
   {

@@ -29,14 +29,24 @@ export async function GET(req: NextRequest, context: { params: { chatId: string 
     // 2. If owner, allow message fetching
     if (isOwner) {
       const messages = await fetchMessages(chatId);
-      return NextResponse.json(messages || [], { status: 200 });
+      const enrichedMessages = (messages || []).map((msg) => ({
+    ...msg,
+      profileImg: true
+  }));
+      return NextResponse.json(enrichedMessages || [], { status: 200 });
     }
 
     // 3. If not owner, check if shareable
     if (chat.isShareable) {
-      const messages = await fetchMessages(chatId);
-      return NextResponse.json(messages || [], { status: 200 });
-    }
+  const messages = await fetchMessages(chatId);
+
+  const enrichedMessages = (messages || []).map((msg) => ({
+    ...msg,
+    profileImg: false
+  }));
+
+  return NextResponse.json(enrichedMessages, { status: 200 });
+}
 
     // 4. Otherwise, it's private
     return NextResponse.json({ error: "This conversation is private" }, { status: 403 });

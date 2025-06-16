@@ -13,7 +13,7 @@ export async function PUT(req: NextRequest) {
     }
 
     // 2. Extract and validate new password
-    const { newPassword } = await req.json();
+    const { newPassword } = await req.json(); 
 
     if (typeof newPassword !== 'string' || newPassword.trim().length < 6) {
       return NextResponse.json(

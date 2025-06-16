@@ -13,11 +13,11 @@ export const verifyPasswordSchema = z.object({
 
 export const newPasswordSchema = z
   .object({
-    newPassword: z.string().min(6, "New password must be at least 6 characters"),
+    newPassword: z.string().min(6, "Make your new password at least 6 chars long"),
     confirmPassword: z.string(),
   })
   .refine((data) => data.newPassword === data.confirmPassword, {
-    message: "Passwords do not match",
+    message: "Oops! Passwords don't match",
     path: ["confirmPassword"],
   }); 
 
@@ -32,8 +32,17 @@ export const nameSchema = z.object({
 export const imageSchema = z.object({
   file: z
     .instanceof(File)
-    .refine(file => file.size <= 5 * 1024 * 1024, "Image must be smaller than 5MB")
-    .refine(file => ["image/jpeg", "image/png", "image/gif"].includes(file.type), "Unsupported image format"),
+    .nullable()
+    .refine((file) => file !== null, { message: "Choose an image to upload" })
+    .refine((file) => file === null || file.size <= 5 * 1024 * 1024, { message: "Image must be smaller than 5MB" })
+    .refine(
+      (file) =>
+        file === null ||
+        ["image/jpeg", "image/png", "image/gif"].includes(file.type),
+      {
+  message: "Unsupported format — try JPG, PNG, or GIF 🚀",
+}
+    ),
 });
 
 // ✅ Zod schema for validation

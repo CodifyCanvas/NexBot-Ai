@@ -5,7 +5,7 @@ export interface Chat {
   title: string
   color?: number
   isShareable: boolean
-  createdAt: string // or `Date` if you parse it
+  createdAt: Date // or `Date` if you parse it
 }
 
 export interface User {

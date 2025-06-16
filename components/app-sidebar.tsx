@@ -23,13 +23,13 @@ export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
 
   return (
     <Sidebar className="flex flex-col gap-2" variant="floating" {...props}>
-      <SidebarHeader className="isolate bg-white/10 backdrop-blur-xl shadow-lg md:outline-1 outline-white/20 border dark:border-none border-black/10 md:rounded-md md:mb-2">
+      <SidebarHeader className="isolate bg-transparent md:bg-white/10 backdrop-blur-xl md:shadow-lg md:outline-1 outline-white/20 md:border dark:border-none border-black/10 md:rounded-md md:mb-2">
         <NavMain items={navMain} />
       </SidebarHeader>
-      <SidebarContent className="isolate bg-white/10 backdrop-blur-xl shadow-lg md:outline-1 outline-white/20 border dark:border-none border-black/10 md:rounded-md md:mb-2 custom-scrollbar">
+      <SidebarContent className="isolate bg-transparent md:bg-white/10 backdrop-blur-xl md:shadow-lg md:outline-1 outline-white/20 md:border dark:border-none border-black/10 md:rounded-md md:mb-2 custom-scrollbar">
         <Chats />
       </SidebarContent>
-      <NavSecondary items={navSecondary} className="isolate bg-white/10 backdrop-blur-xl shadow-lg md:outline-1 outline-white/20 border dark:border-none border-black/10 md:rounded-md mt-auto" />
+      <NavSecondary items={navSecondary} className="isolate bg-transparent md:bg-white/10 backdrop-blur-xl md:shadow-lg md:outline-1 outline-white/20 md:border dark:border-none border-black/10 md:rounded-md mt-auto" />
       <SidebarRail />
     </Sidebar>
   );

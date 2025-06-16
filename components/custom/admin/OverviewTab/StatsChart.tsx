@@ -116,7 +116,7 @@ const StatsChart = () => {
           <Label htmlFor="duration">Duration:</Label>
           <Select value={duration} onValueChange={setDuration}>
             <SelectTrigger className="w-32 isolate bg-white/10 backdrop-blur-xl shadow-lg outline-1 outline-white/20" id="duration">
-              <SelectValue className='' placeholder="Select"  />
+              <SelectValue className='' placeholder="Select" />
             </SelectTrigger>
             <SelectContent className='isolate bg-white/10 backdrop-blur-xl shadow-lg outline-1 outline-white/20'>
               {DURATIONS.map((d) => (
@@ -128,13 +128,17 @@ const StatsChart = () => {
           </Select>
         </div>
       </CardHeader>
-       <CardContent className="h-[250px] w-full overflow-x-auto">
+      <CardContent className="h-[250px] w-full overflow-x-auto">
         {loading ? (
-          <Spinner variant='blue-gradient' />
+          <div className='w-full h-full flex justify-center items-center'>
+            <div className='scale-150'>
+              <Spinner variant='blue-gradient' />
+            </div>
+          </div>
         ) : (
           <div className="w-full bg-transparent">
-        <Line className={"max-h-60"} data={chartData} options={chartOptions} />
-      </div>
+            <Line className={"max-h-60"} data={chartData} options={chartOptions} />
+          </div>
         )}
       </CardContent>
     </Card>

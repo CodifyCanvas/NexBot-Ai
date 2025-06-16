@@ -14,6 +14,7 @@ import Spinner from './Spinner';
 interface Message {
   message: string;
   sender: 'user' | 'bot';
+  profileImg?: boolean; // optional if it might not always be included
 }
 
 export default function ChatPage() {

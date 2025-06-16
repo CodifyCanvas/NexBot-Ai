@@ -56,7 +56,7 @@ const ProfilePasswordField: React.FC<ProfilePasswordFieldProps> = ({ onClose }) 
         toast.error("Incorrect password. Please try again.", {
           richColors: true,
         });
-        return;
+        return; 
       }
 
       setStep(2); // Move to step 2 after successful verification
@@ -103,7 +103,7 @@ const ProfilePasswordField: React.FC<ProfilePasswordFieldProps> = ({ onClose }) 
                   Cancel
                 </Button>
               </DialogClose>
-              <Button disabled={loading} type="submit" className="bg-gradient-to-tr from-blue-500 to-blue-800 text-white w-20">{loading ? <Spinner /> : 'Next'}</Button>
+              <Button disabled={loading} type="submit" className="bg-gradient-to-tr from-blue-500 to-blue-800 text-white sm:w-20">{loading ? <Spinner /> : 'Next'}</Button>
             </DialogFooter>
           </form>
         </Form>

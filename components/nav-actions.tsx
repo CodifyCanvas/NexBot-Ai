@@ -1,7 +1,7 @@
 'use client';
 
-import { Suspense, useState, useEffect } from 'react';
-import { useParams } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import { useParams, useRouter } from 'next/navigation';
 import {
   Link,
   Link2,
@@ -35,47 +35,56 @@ import { refreshChats } from '@/lib/chat-refresh';
 import { Chat } from '@/lib/definations';
 import { toast } from 'sonner';
 import { ModeToggle } from './ui/Mode-Toggle';
-import { useRouter } from 'next/navigation';
 import { useUserContext } from '@/hooks/context/userContext';
-import { ChatDateSkeleton, ProfileSkeleton, ToggleFavoriteSkeleton, ToggleSkeleton, ToggleThemeSkeleton } from './Skeletons/NavActionFallbacks';
+import {
+  ChatDateSkeleton,
+  ProfileSkeleton,
+  ToggleFavoriteSkeleton,
+} from './Skeletons/NavActionFallbacks';
 
 export function NavActions() {
   const { chatId } = useParams() as { chatId?: string };
-
-  const { user, loading, error } = useUserContext();
-
-  const [isFav, setIsFav] = useState(false);
-  const [chatDate, setChatDate] = useState('');
-  const [menuOpen, setMenuOpen] = useState(false);
-  const [chatLoading, setChatLoading] = useState(false);
   const router = useRouter();
+  const { user, loading: isUserLoading, error: userError } = useUserContext();
 
-  const loadFavStatus = async () => {
-    const res = await fetch('/api/chats/favorites');
-    const data = await res.json();
-    const favIds = (data || []).map((c: Chat) => c.chatId.toString());
-    setIsFav(chatId ? favIds.includes(chatId) : false);
-  };
+  const [isFavorite, setIsFavorite] = useState(false);
+  const [chatDetails, setChatDetails] = useState<Chat | null>(null);
+  const [isChatLoading, setIsChatLoading] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
 
-  const loadChatDate = async () => {
+  // Fetch list of favorite chats and check current chat
+  const fetchFavoriteStatus = async () => {
     try {
-      setChatLoading(true);
-      const res = await fetch(`/api/chat/${chatId}`);
+      const res = await fetch('/api/chats/favorites');
       const data = await res.json();
-      setChatDate(data.createdAt || '');
-    } catch (error) {
-      console.error('Failed to load chat date:', error);
-      setChatDate('');
-    } finally {
-      setChatLoading(false);
+      const favoriteIds = (data || []).map((c: Chat) => c.chatId.toString());
+      setIsFavorite(chatId ? favoriteIds.includes(chatId) : false);
+    } catch (err) {
+      console.error('Error fetching favorites:', err);
     }
   };
 
-  const toggleFav = async () => {
+  // Fetch chat details including creator (owner) ID
+  const fetchChatDetails = async () => {
+    try {
+      setIsChatLoading(true);
+      const res = await fetch(`/api/chat/${chatId}`);
+      const data = await res.json();
+      setChatDetails(data);
+    } catch (error) {
+      console.error('Failed to load chat details:', error);
+      setChatDetails(null);
+    } finally {
+      setIsChatLoading(false);
+    }
+  };
+
+  // Toggle favorite state
+  const handleToggleFavorite = async () => {
     if (!chatId) return;
 
-    const newState = !isFav;
-    setIsFav(newState);
+    const newState = !isFavorite;
+    setIsFavorite(newState);
 
     try {
       const res = await fetch(`/api/chat/${chatId}/favorite`, {
@@ -87,22 +96,14 @@ export function NavActions() {
       const result = await res.json();
 
       if (res.ok) {
-        toast.custom(
-          (id) => (
-            <div
-              className="isolate p-4 w-80 bg-green-300/50 dark:bg-green-300/20 backdrop-blur-2xl shadow-lg md:outline-1 outline-white/20 border dark:border-none border-black/10 md:rounded-md flex items-center gap-2"
-            >
-              <Star size={17} className='text-green-800 dark:text-green-300' /> {/* Icon */}
-              <span className="font-semibold text-sm whitespace-nowrap overflow-hidden text-green-800 dark:text-green-300 text-ellipsis">
-                {result.message || 'Updated favorites'}
-              </span>
-            </div>
-          ),
-          {
-            position: 'top-center',
-          }
-        );
-
+        toast.custom(() => (
+          <div className="isolate p-4 w-80 bg-green-300/50 dark:bg-green-300/20 backdrop-blur-2xl shadow-lg md:outline-1 outline-white/20 border dark:border-none border-black/10 md:rounded-md flex items-center gap-2">
+            <Star size={17} className="text-green-800 dark:text-green-300" />
+            <span className="font-semibold text-sm text-green-800 dark:text-green-300">
+              {result.message || 'Updated favorites'}
+            </span>
+          </div>
+        ), { position: 'top-center' });
       } else {
         toast.error(result.error || 'Could not update favorites', {
           richColors: true,
@@ -110,10 +111,10 @@ export function NavActions() {
         });
       }
 
-      await loadFavStatus();
+      await fetchFavoriteStatus();
       refreshChats();
-    } catch (error) {
-      console.error('Favorite update failed:', error);
+    } catch (err) {
+      console.error('Favorite update failed:', err);
       toast.error('Something went wrong', {
         richColors: true,
         icon: <Star size={17} />,
@@ -121,108 +122,97 @@ export function NavActions() {
     }
   };
 
+  // On load, fetch chat and favorite state
   useEffect(() => {
-    if (chatId) {
-      loadFavStatus();
-      loadChatDate();
+    if (chatId && user) {
+      fetchFavoriteStatus();
+      fetchChatDetails();
     }
-  }, [chatId]);
+  }, [chatId, user]);
 
-  if (error) {
-    return null;
-  }
+  if (userError) return null;
 
   const handleCopyLink = async (chatId: string) => {
-    const url = `${window.location.origin}/chat/${chatId}`
+    const url = `${window.location.origin}/chat/${chatId}`;
     try {
       await navigator.clipboard.writeText(url);
-      toast.custom(
-        (id) => (
-          <div
-            className="isolate p-4 w-80 bg-green-300/50 dark:bg-green-300/20 backdrop-blur-2xl shadow-lg md:outline-1 outline-white/20 border dark:border-none border-black/10 md:rounded-md flex items-center gap-2"
-          >
-            <Link2 size={17} className='text-green-800 dark:text-green-300' /> {/* Icon */}
-            <span className="font-semibold text-sm whitespace-nowrap overflow-hidden text-green-800 dark:text-green-300 text-ellipsis">
-              Link copied!
-            </span>
-          </div>
-        ),
-        {
-          position: 'top-center',
-        }
-      );
-    } catch (error) {
-      console.error("Copy failed:", error)
-      toast.error("Failed to copy link", {
+      toast.custom(() => (
+        <div className="isolate p-4 w-80 bg-green-300/50 dark:bg-green-300/20 backdrop-blur-2xl shadow-lg border dark:border-none border-black/10 md:rounded-md flex items-center gap-2">
+          <Link2 size={17} className="text-green-800 dark:text-green-300" />
+          <span className="font-semibold text-sm text-green-800 dark:text-green-300">Link copied!</span>
+        </div>
+      ), { position: 'top-center' });
+    } catch (err) {
+      console.error('Copy failed:', err);
+      toast.error('Failed to copy link', {
         richColors: true,
-        position: "top-center",
+        position: 'top-center',
         icon: <Link2 size={20} />,
-      })
+      });
     }
-  }
+  };
+
+  const isOwner = user && chatDetails && user.id?.toString() === chatDetails.userId?.toString();
 
   return (
     <div className="flex items-center gap-2 text-sm">
       {chatId && (
         <>
-          {chatLoading ? (
+          {isChatLoading ? (
             <ChatDateSkeleton />
-          ) : chatDate ? (
+          ) : chatDetails?.createdAt && (
             <div className="text-muted-foreground hidden md:inline-block mr-1">
               <Tooltip>
                 <TooltipTrigger>
-                  {new Date(chatDate)
-                    .toLocaleDateString('en-GB', {
-                      day: '2-digit',
-                      month: 'short',
-                      year: 'numeric',
-                    })
-                    .replace(/ /g, '-')}
+                  {new Date(chatDetails.createdAt).toLocaleDateString('en-GB', {
+                    day: '2-digit',
+                    month: 'short',
+                    year: 'numeric',
+                  }).replace(/ /g, '-')}
                 </TooltipTrigger>
                 <TooltipContent>Chat creation date</TooltipContent>
               </Tooltip>
             </div>
-          ) : null}
+          )}
 
-          {chatLoading ? (
+          {/* Favorite icon (only for owner) */}
+          {isChatLoading ? (
             <ToggleFavoriteSkeleton />
-          ) : (
+          ) : isOwner ? (
             <Tooltip>
               <TooltipTrigger asChild>
                 <div
                   role="button"
-                  onClick={toggleFav}
+                  onClick={handleToggleFavorite}
                   className="h-7 w-7 mr-2 flex items-center justify-center cursor-pointer hover:scale-125"
                 >
                   <Star
                     className={cn(
                       'text-yellow-500',
-                      isFav
+                      isFavorite
                         ? 'h-5 w-5 fill-yellow-300 animate-pulse'
                         : 'h-4 w-4 fill-none'
                     )}
                   />
                 </div>
               </TooltipTrigger>
-              <TooltipContent>{isFav ? 'Unfavorite' : 'Favorite'}</TooltipContent>
+              <TooltipContent>{isFavorite ? 'Unfavorite' : 'Favorite'}</TooltipContent>
             </Tooltip>
-          )}
+          ) : null}
         </>
       )}
 
       <ModeToggle />
 
+      {/* User menu */}
       <Popover open={menuOpen} onOpenChange={setMenuOpen}>
         <PopoverTrigger asChild>
-          {loading || !user ? (
-            <button type="button" className="h-8 w-8 rounded-full flex items-center justify-center">
+          {isUserLoading || !user ? (
+            <button className="h-8 w-8 rounded-full flex items-center justify-center">
               <ProfileSkeleton />
             </button>
           ) : (
-            <button
-              type="button"
-              className="h-8 w-8 rounded-full flex items-center justify-center cursor-pointer"
-            >
+            <button className="h-8 w-8 rounded-full flex items-center justify-center cursor-pointer">
               <Avatar>
                 <AvatarImage src={user.profileImg} />
                 <AvatarFallback className={getColorByLetter(user.name)}>
@@ -236,31 +226,35 @@ export function NavActions() {
         <PopoverContent className="w-56 p-0 isolate bg-white/10 backdrop-blur-xl shadow-lg outline-1 outline-white/20" align="end">
           <Sidebar collapsible="none" className="bg-transparent">
             <SidebarContent>
-              {user &&
+              {user && (
                 <SidebarGroup className="border-b">
                   <SidebarGroupContent>
                     <SidebarMenu>
                       <SidebarMenuItem>
-                        <SidebarMenuButton onClick={() => router.push('/chat/profile')} className='bg-transparent cursor-pointer hover:bg-blue-300 dark:bg-transparent active:bg-blue-400 dark:hover:bg-blue-200/20 dark:active:bg-blue-200/30'>
+                        <SidebarMenuButton onClick={() => router.push('/chat/profile')} className="hover:bg-blue-300 dark:hover:bg-blue-200/20">
                           <UserRound /> <span>Profile</span>
                         </SidebarMenuButton>
                       </SidebarMenuItem>
                     </SidebarMenu>
                   </SidebarGroupContent>
                 </SidebarGroup>
-              }
-              {chatId &&
+              )}
+
+              {chatId && (
                 <SidebarGroup className="-mt-2 border-b">
                   <SidebarGroupContent>
                     <SidebarMenu>
                       <SidebarMenuItem>
-                        <SidebarMenuButton onClick={() => handleCopyLink(chatId)} className='bg-transparent hover:bg-blue-300 dark:bg-transparent active:bg-blue-400 dark:hover:bg-blue-200/20 dark:active:bg-blue-200/30'>
+                        <SidebarMenuButton onClick={() => handleCopyLink(chatId)} className="hover:bg-blue-300 dark:hover:bg-blue-200/20">
                           <Link /> <span>Copy Link</span>
                         </SidebarMenuButton>
                       </SidebarMenuItem>
                     </SidebarMenu>
                   </SidebarGroupContent>
-                </SidebarGroup>}
+                </SidebarGroup>
+              )}
+
+              {/* Logout */}
               <SidebarGroup>
                 <SidebarGroupContent>
                   <SidebarMenu>
@@ -280,7 +274,6 @@ export function NavActions() {
                   </SidebarMenu>
                 </SidebarGroupContent>
               </SidebarGroup>
-
             </SidebarContent>
           </Sidebar>
         </PopoverContent>

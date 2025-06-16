@@ -52,7 +52,7 @@ const NewPasswordFields: React.FC<NewPasswordFieldsProps> = ({ onClose }) => {
         toast.error("Failed to update password.", {
           richColors: true,
           position: 'top-center',
-        });
+        }); 
         return;
       }
 
@@ -113,7 +113,7 @@ const NewPasswordFields: React.FC<NewPasswordFieldsProps> = ({ onClose }) => {
               Cancel
             </Button>
           </DialogClose>
-                        <Button disabled={loading} type="submit" className="bg-gradient-to-tr from-blue-500 to-blue-800 text-white w-20 hover:from-blue-700 hover:to-blue-800 transition-all duration-300">{loading ? <Spinner /> : 'Change'}</Button>
+                        <Button disabled={loading} type="submit" className="bg-gradient-to-tr from-blue-500 to-blue-800 text-white sm:w-20 hover:from-blue-700 hover:to-blue-800 transition-all duration-300">{loading ? <Spinner /> : 'Change'}</Button>
         </DialogFooter>
       </form>
     </Form>

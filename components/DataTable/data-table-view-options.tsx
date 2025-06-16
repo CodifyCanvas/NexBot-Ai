@@ -18,6 +18,14 @@ export function DataTableViewOptions<TData>({
 }: {
   table: Table<TData>
 }) {
+
+  const columnLabelMap: Record<string, string> = {
+    // add overrides as needed
+  id: 'Serial No',
+  createdAt: 'Recieved',
+  respondedAt: 'Responded',
+};
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -31,27 +39,29 @@ export function DataTableViewOptions<TData>({
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-[150px]">
-        <DropdownMenuLabel>Toggle columns</DropdownMenuLabel>
-        <DropdownMenuSeparator />
-        {table
-          .getAllColumns()
-          .filter(
-            (column) =>
-              typeof column.accessorFn !== "undefined" && column.getCanHide()
-          )
-          .map((column) => {
-            return (
-              <DropdownMenuCheckboxItem
-                key={column.id}
-                className="capitalize"
-                checked={column.getIsVisible()}
-                onCheckedChange={(value) => column.toggleVisibility(!!value)}
-              >
-                {column.id}
-              </DropdownMenuCheckboxItem>
-            )
-          })}
-      </DropdownMenuContent>
+  <DropdownMenuLabel>Toggle columns</DropdownMenuLabel>
+  <DropdownMenuSeparator />
+  {table
+    .getAllColumns()
+    .filter(
+      (column) =>
+        typeof column.accessorFn !== "undefined" && column.getCanHide()
+    )
+    .map((column) => {
+      const label = columnLabelMap[column.id] ?? column.id;
+      return (
+        <DropdownMenuCheckboxItem
+          key={column.id}
+          className="capitalize focus:bg-blue-400/50"
+          checked={column.getIsVisible()}
+          onCheckedChange={(value) => column.toggleVisibility(!!value)}
+        >
+          {label}
+        </DropdownMenuCheckboxItem>
+      );
+    })}
+</DropdownMenuContent>
+
     </DropdownMenu>
   )
 }
