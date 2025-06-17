@@ -10,3 +10,7 @@ export function refetchUsers() {
 export function refetchContactMessages() {
   mutate('/api/contact');
 }
+
+export function fetchFavoriteStatus() {
+  mutate('/api/chats/favorites');
+}

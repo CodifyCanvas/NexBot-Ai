@@ -3,7 +3,7 @@ import { checkAdmin } from "@/lib/actions/admin";
 import { DeleteContactMessage, fetchContactMessageById } from "@/lib/actions/contact";
 import { NextRequest, NextResponse } from "next/server";
 
-export async function GET(req: NextRequest, context: { params: { id: string } }) {
+export async function GET(req: NextRequest, { params } : { params: Promise<{ id: string }> }) {
   try {
     // 1. Authenticate the user
     const session = await auth();
@@ -27,7 +27,7 @@ export async function GET(req: NextRequest, context: { params: { id: string } })
     }
 
     // 3. Extract and validate message ID from route
-    const { id } = await context.params;
+    const { id } = await params;
     const messageId = Number(id);
     if (isNaN(messageId)) {
       return NextResponse.json(
@@ -58,7 +58,7 @@ export async function GET(req: NextRequest, context: { params: { id: string } })
   }
 }
 
-export async function DELETE(req: NextRequest, context: { params: { id: string } }) {
+export async function DELETE(req: NextRequest, { params } : { params: Promise<{ id: string }> }) {
   try {
     // 1. Authenticate request
     const session = await auth();
@@ -87,7 +87,7 @@ export async function DELETE(req: NextRequest, context: { params: { id: string }
     }
 
     // 3. Parse and validate request payload
-    const { id } = await context.params;
+    const { id } = await params;
     const messageId = Number(id);
 
     if (isNaN(messageId)) {
@@ -113,14 +113,18 @@ export async function DELETE(req: NextRequest, context: { params: { id: string }
       { status: 200 }
     );
 
-  } catch (err: any) {
-    console.error("[DELETE /api/contact]:", err?.message || err);
-    return NextResponse.json(
-      {
-        error: "Internal Server Error",
-        message: err?.message || "Unexpected server error.",
-      },
-      { status: 500 }
-    );
-  }
+  } catch (err: unknown) {
+  // Narrow error type safely
+  const errorMessage = err instanceof Error ? err.message : "Unexpected server error.";
+
+  console.error("[DELETE /api/contact]:", errorMessage);
+
+  return NextResponse.json(
+    {
+      error: "Internal Server Error",
+      message: errorMessage,
+    },
+    { status: 500 }
+  );
+}
 }

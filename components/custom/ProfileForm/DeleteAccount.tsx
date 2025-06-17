@@ -24,7 +24,6 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { CircleCheckIcon } from "lucide-react";
-import { useRouter } from "next/navigation";
 import { handleSignOut } from "@/app/login/authActions";
 import { User } from "@/lib/definations";
 
@@ -34,7 +33,6 @@ interface DeleteAllAccountProps {
 }
 
 const DeleteAllAccount: React.FC<DeleteAllAccountProps> = ({ onClose, user }) => {
-  const router = useRouter();
 
   const deleteConfirmationSchema = z.object({
   confirmation: z.string().refine(
@@ -109,7 +107,7 @@ const DeleteAllAccount: React.FC<DeleteAllAccountProps> = ({ onClose, user }) =>
               <FormItem>
                 <FormLabel>Confirm by typing your email</FormLabel>
                 <FormControl>
-                  <Input placeholder="example@domain.com" {...field} />
+                  <Input id="confirmation-delete-account-field" placeholder="example@domain.com" {...field} />
                 </FormControl>
                 <FormDescription className="text-gray-600 dark:text-gray-400">
                   You must type <strong>{user?.email}</strong> to proceed.

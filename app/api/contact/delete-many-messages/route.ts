@@ -38,10 +38,10 @@ export async function DELETE(req: NextRequest) {
     // 5. Delete each message
     for (const id of numericIds) {
       await DeleteContactMessage(id);
-    }
+    } 
 
     return NextResponse.json(
-      { message: `${numericIds.length} message(s) deleted successfully.` },
+      { message: `${numericIds.length} message${numericIds.length > 1 ? 's' : ''} deleted successfully.` },
       { status: 200 }
     );
 

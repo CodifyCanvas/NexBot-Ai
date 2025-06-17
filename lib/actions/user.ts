@@ -4,6 +4,24 @@ import { users } from '@/drizzle/schema'
 import { eq, and } from "drizzle-orm";
 import { db } from '../db'
 
+export async function userSignup(name: string, email: string, password: string) {
+  // Check if the email already exists
+  const existingUser = await db.select().from(users).where(eq(users.email, email));
+
+  if (existingUser.length > 0) {
+    return { success: false, message: 'User already exists' };
+  }
+
+  await db.insert(users).values({
+    name: name,
+    email: email,
+    password: password,
+    profileImg: '',
+  });
+
+  return { success: true };
+}
+
 export async function fetchUserForLogin(email: string, password: string) {
   if (!email || !password) {
     console.error("Missing email or password.");

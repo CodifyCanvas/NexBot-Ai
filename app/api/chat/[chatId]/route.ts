@@ -6,7 +6,7 @@ import { DeleteChat, fetchChat } from "@/lib/actions/chat"; // Assuming your Del
 
 export async function GET(
   req: NextRequest,
-  context: { params: { chatId: string } }
+   { params } : { params: Promise<{ chatId: string }> }
 ) {
   try {
     // 1. Authenticate the user
@@ -16,7 +16,7 @@ export async function GET(
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
 
-    const { chatId } = await context.params;
+    const { chatId } = await params;
     const userId = Number(session.user.id);
 
     // 2. Attempt to fetch the chat
@@ -48,7 +48,7 @@ export async function GET(
 
 
 export async function DELETE(
-  req: NextRequest, context: { params: { chatId: string } }
+  req: NextRequest, { params } : { params: Promise<{ chatId: string }> }
 ) {
   try {
     const session = await auth();
@@ -57,7 +57,7 @@ export async function DELETE(
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
 
-    const { chatId } = await context.params;
+    const { chatId } = await params;
     const userId = Number(session.user.id);
 
     try {
@@ -67,13 +67,13 @@ export async function DELETE(
         { message: "Chat deleted" },
         { status: 200 }
       );
-    } catch (err: any) {
-      if (err.message === "Chat not found or unauthorized access.") {
-        return NextResponse.json(
-          { message: "Chat not found" },
-          { status: 404 }
-        );
-      }
+    } catch (err: unknown) {
+  if (err instanceof Error && err.message === "Chat not found or unauthorized access.") {
+    return NextResponse.json(
+      { message: "Chat not found" },
+      { status: 404 }
+    );
+  }
 
       return NextResponse.json(
         { message: "Delete failed" },

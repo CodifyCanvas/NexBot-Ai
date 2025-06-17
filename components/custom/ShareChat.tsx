@@ -30,8 +30,7 @@ const ShareChat = ({ chatId, isShareable }: { chatId: string, isShareable: boole
         throw new Error(data.error || 'Failed to update share status')
       }
 
-      toast.custom(
-        (id) => (
+      toast.custom(() => (
           <div
             className="isolate p-4 w-80 bg-green-300/50 flex-row dark:bg-green-300/20 backdrop-blur-2xl shadow-lg md:outline-1 outline-white/20 border dark:border-none border-black/10 rounded-md flex items-center gap-2"
           >
@@ -50,7 +49,7 @@ const ShareChat = ({ chatId, isShareable }: { chatId: string, isShareable: boole
     } catch (err) {
       console.error('Error updating share status:', err)
       toast.error('Could not update share status. Try again.', { richColors: true })
-      setIsSharable(prev => !checked) // rollback toggle
+      setIsSharable(() => !checked) // rollback toggle
     } finally {
       setLoading(false)
     }

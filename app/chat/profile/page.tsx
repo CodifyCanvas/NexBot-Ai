@@ -12,7 +12,7 @@ const page = () => {
   return (
     <div className='flex h-full w-full flex-col p-2 realtive gap-6 z-20 px-5 sm:px-10 py-5'>
       <div className='flex flex-col items-start justify-center gap-2 text-center z-20 w-full'>
-        <h1 className='text-xl text-white sm:text-2xl md:text-3xl'>Profile</h1>
+        <h1 className='text-xl text-black dark:text-white sm:text-2xl md:text-3xl'>Profile</h1>
       </div>
       <ProfileForm />
     </div>

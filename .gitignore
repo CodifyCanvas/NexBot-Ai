@@ -13,6 +13,8 @@
 # testing
 /coverage
 
+certs/ca.pem
+
 # next.js
 /.next/
 /out/

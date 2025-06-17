@@ -73,7 +73,7 @@ export function ShowUserInfo({ id }: Props) {
         const res = await fetch(`/api/admin/stats/${id}`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ value: Number(duration) }),
+          body: JSON.stringify({ duration: Number(duration) }),
         });
 
         if (!res.ok) throw new Error('Failed to fetch user conversation stats');

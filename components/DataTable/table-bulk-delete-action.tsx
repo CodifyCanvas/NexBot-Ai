@@ -16,19 +16,19 @@ import {
   AlertDialogAction,
 } from '@/components/ui/alert-dialog';
 
-interface TableBulkDeleteActionProps {
-  table: Table<any>;
-  entityName: string; // e.g. 'user' or 'message'
-  apiEndpoint: string; // e.g. '/api/user/delete-many-users'
-  onSuccess?: () => void; // refetch function
-}
+type TableBulkDeleteActionProps<T extends { id: string | number }> = {
+  table: Table<T>;
+  entityName: string;
+  apiEndpoint: string;
+  onSuccess: () => void;
+};
 
-export function TableBulkDeleteAction({
+export function TableBulkDeleteAction<T extends { id: string | number }>({
   table,
   entityName,
   apiEndpoint,
   onSuccess,
-}: TableBulkDeleteActionProps) {
+}: TableBulkDeleteActionProps<T>) {
   const [loading, setLoading] = useState(false);
   const selectedRows = table.getFilteredSelectedRowModel().rows;
 
@@ -55,12 +55,16 @@ export function TableBulkDeleteAction({
 
       if (onSuccess) onSuccess();
       table.resetRowSelection();
-    } catch (err: any) {
-      console.error(`Bulk delete error for ${entityName}:`, err);
-      toast.error(err.message || `Something went wrong while deleting ${entityName}s.`, {
-        richColors: true,
-      });
-    } finally {
+    } catch (err: unknown) {
+  console.error(`Bulk delete error for ${entityName}:`, err);
+
+  // Safely extract message from unknown error
+  const message = err instanceof Error ? err.message : `Something went wrong while deleting ${entityName}s.`;
+
+  toast.error(message, {
+    richColors: true,
+  });
+} finally {
       setLoading(false);
     }
   };

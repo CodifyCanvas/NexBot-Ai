@@ -1,35 +1,36 @@
 import { BookOpenCheck, MessageSquareText, NotebookPen, Search, SquarePen } from 'lucide-react';
 
 export const features = [
-    { title: 'Have Intelligent, Real-Time Text Conversations', icon: MessageSquareText },
-    { title: 'Summarize Articles, Docs, and More Instantly', icon: BookOpenCheck },
-    { title: 'Enhance Your Writing with AI-Powered Edits', icon: NotebookPen },
+  { title: 'Have Intelligent, Real-Time Text Conversations', icon: MessageSquareText },
+  { title: 'Summarize Articles, Docs, and More Instantly', icon: BookOpenCheck },
+  { title: 'Enhance Your Writing with AI-Powered Edits', icon: NotebookPen },
 ];
 
 export const Names = {
-    app_name: 'NexBot',
+  app_name: 'NexBot',
 }
 export const Images = {
-    main_logo_transparent: '/assets/images/main_logo_transparent.png',
-    main_logo: '/assets/images/main_logo.png',
-    ai_svg_login: '/assets/images/Chat_bot_svg_login_screen.png',
-    main_feature_card: '/assets/images/feature_card.jpg',
-    about_image: '/assets/images/about_image.jpg',
+  main_logo_transparent: '/assets/images/Nexbot_transperant_logo.svg',
+  main_logo: '/assets/images/Nexbot_transperant_logo.png',
+  ai_svg_login: '/assets/images/sign_in_svg.svg',
+  ai_svg_signup: '/assets/images/sign_up_svg.svg',
+  main_feature_card: '/assets/images/feature_card.jpg',
+  about_image: '/assets/images/about_image.jpg',
 }
 
 export const navMain = [
-    { title: "Search", url: "/chat/search", icon: Search },
-    { title: "New Chat", url: "/chat", icon: SquarePen },
-  ];
-  
-  export const navLinks = [
-    { label: "Home", href: "#home" },
-    { label: "Features", href: "#features" },
-    { label: "About", href: "#about" },
-    { label: "Contact Us", href: "#contact-us" },
-  ];
-  
-  export const Countries = [
+  { title: "Search", url: "/chat/search", shortcutKey : 'Alt + S',icon: Search },
+  { title: "New Chat", url: "/chat", shortcutKey: 'Alt + C', icon: SquarePen },
+];
+
+export const navLinks = [
+  { label: "Home", href: "#home" },
+  { label: "Features", href: "#features" },
+  { label: "About", href: "#about" },
+  { label: "Contact Us", href: "#contact-us" },
+];
+
+export const Countries = [
   { country: "Pakistan", flag: "https://www.worldometers.info/img/flags/pk-flag.gif" },
   { country: "China", flag: "https://www.worldometers.info/img/flags/ch-flag.gif" },
   { country: "Kazakhstan", flag: "https://www.worldometers.info/img/flags/kz-flag.gif" },
@@ -52,7 +53,7 @@ export const navMain = [
   { country: "Bangladesh", flag: "https://www.worldometers.info/img/flags/bg-flag.gif" }
 ];
 
- export const icons = [
+export const icons = [
   {
     label: "Github",
     path: "/assets/icons/github-icon.svg",

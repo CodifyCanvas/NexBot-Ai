@@ -1,7 +1,7 @@
 import { chats, favoriteChats, messages, users } from "@/drizzle/schema";
 import { db } from "../db";
-import { and, count, eq, gte, inArray, sql } from "drizzle-orm";
-import { addDays, differenceInDays, eachDayOfInterval, format, subDays } from "date-fns";
+import { and, count, eq, inArray, sql } from "drizzle-orm";
+import { DailyStat, UserConversationStats, UserGeneralStatsData } from "../definations";
 
 export async function checkAdmin(userId: number): Promise<boolean> {
   const [user] = await db
@@ -45,20 +45,7 @@ export async function getAdminStats() {
   };
 }
 
-type DailyStat = {
-  date: string;   // 'YYYY-MM-DD'
-  users: number;
-  chats: number;
-  messages: number;
-};
-
 export async function getDailyStats(duration: number): Promise<DailyStat[]> {
-  // Helper to build date filter condition or null
-  const dateCondition = duration > 0 
-    ? sql`WHERE ${users.createdAt} >= DATE_SUB(CURDATE(), INTERVAL ${duration} DAY)`
-    : null;
-
-  // Note: Drizzle doesn't support dynamic WHERE in this style, so we manually write queries here.
 
   // Users query
   const userQuery = duration > 0
@@ -138,25 +125,7 @@ export async function getDailyStats(duration: number): Promise<DailyStat[]> {
   }));
 }
 
-type getUserConversationStats = {
-  date: string;
-  chat: number;
-  message: number;
-  botResponse: number;
-};
 
-type UserGeneralStatsData = {
-  id: number;
-  name: string;
-  profileImg: string;
-  email: string;
-  admin: boolean;
-  verified: boolean;
-  createdAt: string;
-  totalMessages: number;
-  totalChats: number;
-  totalBotResponses: number;
-};
 
 export async function getUserGeneralStats(userId: number): Promise<UserGeneralStatsData> {
   // 1. Fetch user details
@@ -226,7 +195,7 @@ export async function getUserGeneralStats(userId: number): Promise<UserGeneralSt
 export async function getUserConversationStats(
   userId: number,
   duration: number
-): Promise<getUserConversationStats[] | null> {
+): Promise<UserConversationStats[] | null> {
   if (duration < 0) throw new Error("Duration must be 0 or greater");
 
   const useDateFilter = duration > 0;

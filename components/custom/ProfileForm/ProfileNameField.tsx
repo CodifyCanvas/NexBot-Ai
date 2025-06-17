@@ -66,7 +66,7 @@ const ProfileNameField: React.FC<ProfileNameFieldProps> = ({ onClose }) => {
         return;
       }
 
-      toast.custom((id) => (
+      toast.custom(() => (
         <div className="isolate p-4 w-80 bg-green-300/50 dark:bg-green-300/20 backdrop-blur-2xl shadow-lg md:outline-1 outline-white/20 border dark:border-none border-black/10 md:rounded-md flex items-center gap-2">
           <CircleCheckIcon size={17} className="text-green-800 dark:text-green-300" />
           <span className="font-semibold text-sm whitespace-nowrap overflow-hidden text-green-800 dark:text-green-300 text-ellipsis">
@@ -107,7 +107,7 @@ const ProfileNameField: React.FC<ProfileNameFieldProps> = ({ onClose }) => {
               <FormItem>
                 <FormLabel>Name</FormLabel>
                 <FormControl>
-                  <Input placeholder="e.g, Shahzaib Awan" {...field} />
+                  <Input id='name-field' placeholder="e.g, Shahzaib Awan" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>

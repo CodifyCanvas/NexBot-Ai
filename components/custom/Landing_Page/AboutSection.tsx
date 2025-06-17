@@ -16,56 +16,59 @@ export default function AboutSection() {
   const imageRef = useRef<HTMLDivElement | null>(null);
 
   useLayoutEffect(() => {
-    gsap.registerPlugin(ScrollTrigger);
+  gsap.registerPlugin(ScrollTrigger);
 
-    if (!sectionRef.current) return;
+  if (!sectionRef.current) return;
 
-    const ctx = gsap.context(() => {
-      const tl = gsap.timeline({
-        scrollTrigger: {
-          trigger: sectionRef.current,
-          start: "top 80%",
-          end: "bottom 20%",
-          toggleActions: "play none none none",
-        },
-        defaults: { ease: "power3.out" },
+  const ctx = gsap.context(() => {
+    const section = sectionRef.current!;
+
+    const tl = gsap.timeline({
+      scrollTrigger: {
+        trigger: section,
+        start: "top 80%",
+        end: "bottom 20%",
+        toggleActions: "play none none none",
+      },
+      defaults: { ease: "power3.out" },
+    });
+
+    const bubbles = section.querySelectorAll("div.absolute > div");
+    if (bubbles.length) {
+      tl.fromTo(bubbles, { opacity: 0, scale: 0.8 }, {
+        opacity: 1, scale: 1, stagger: 0.2, duration: 0.7,
       });
+    }
 
-      const bubbles = sectionRef.current.querySelectorAll("div.absolute > div");
-      if (bubbles.length) {
-        tl.fromTo(bubbles, { opacity: 0, scale: 0.8 }, {
-          opacity: 1, scale: 1, stagger: 0.2, duration: 0.7,
-        });
-      }
+    if (titleRefs.current.length) {
+      tl.fromTo(titleRefs.current, { y: -20, opacity: 0 }, {
+        y: 0, opacity: 1, stagger: 0.2, duration: 0.4,
+      }, "-=0.5");
+    }
 
-      if (titleRefs.current.length) {
-        tl.fromTo(titleRefs.current, { y: -20, opacity: 0 }, {
-          y: 0, opacity: 1, stagger: 0.2, duration: 0.4,
-        }, "-=0.5");
-      }
+    if (headingRef.current) {
+      tl.fromTo(headingRef.current, { y: 20, opacity: 0 }, {
+        y: 0, opacity: 1, duration: 0.4,
+      }, "-=0.3");
+    }
 
-      if (headingRef.current) {
-        tl.fromTo(headingRef.current, { y: 20, opacity: 0 }, {
-          y: 0, opacity: 1, duration: 0.4,
-        }, "-=0.3");
-      }
+    const cards = cardRefs.current.filter(Boolean);
+    if (cards.length) {
+      tl.fromTo(cards, { y: 20, opacity: 0 }, {
+        y: 0, opacity: 1, stagger: 0.2, duration: 0.5,
+      }, "-=0.3");
+    }
 
-      const cards = cardRefs.current.filter(Boolean);
-      if (cards.length) {
-        tl.fromTo(cards, { y: 20, opacity: 0 }, {
-          y: 0, opacity: 1, stagger: 0.2, duration: 0.5,
-        }, "-=0.3");
-      }
+    if (imageRef.current) {
+      tl.fromTo(imageRef.current, { y: 20, opacity: 0 }, {
+        y: 0, opacity: 1, duration: 0.5,
+      }, "-=0.3");
+    }
+  }, sectionRef);
 
-      if (imageRef.current) {
-        tl.fromTo(imageRef.current, { y: 20, opacity: 0 }, {
-          y: 0, opacity: 1, duration: 0.5,
-        }, "-=0.3");
-      }
-    }, sectionRef);
+  return () => ctx.revert();
+}, []);
 
-    return () => ctx.revert();
-  }, []);
 
   return (
     <section

@@ -6,7 +6,7 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 export function getColorByLetter(name: string) {
-  let letter = name.charAt(0).toLowerCase();
+  const letter = name.charAt(0).toLowerCase();
 
   if (/^[a-d]$/.test(letter)) {
     return "bg-green-300/70 text-green-800 dark:bg-green-800/70 dark:text-green-400";
@@ -22,7 +22,7 @@ export function getColorByLetter(name: string) {
     return "bg-yellow-400/50 text-yellow-800 dark:bg-yellow-800/50 dark:text-yellow-500";
   }
 
-  return "bg-white text-black dark:bg-black dark:text-white"; // Consistently return a string for the default case
+  return "bg-white text-black dark:bg-black dark:text-white";
 }
 
 /**
@@ -61,7 +61,7 @@ export function getRandomInt1to10() {
 export function getBgColorClass(n: number): string {
   if (n < 1 || n > 10) return '';
 
-  const colors = {
+  const colors: Record<number, string> = {
     1: "bg-red-400 dark:bg-red-500",
     2: "bg-orange-400 dark:bg-red-500",
     3: "bg-fuchsia-500 dark:bg-fuchsia-700",
@@ -76,6 +76,17 @@ export function getBgColorClass(n: number): string {
 
   return colors[n] || '';
 }
+
+export function formatDateDDMonYYYY(date: Date, separator: string = '-'): string {
+  // Format the date parts
+  const day = date.toLocaleDateString('en-GB', { day: '2-digit' });     // e.g. "18"
+  const month = date.toLocaleDateString('en-GB', { month: 'short' });   // e.g. "Jun"
+  const year = date.toLocaleDateString('en-GB', { year: 'numeric' });   // e.g. "2024"
+
+  // Join them with the custom separator
+  return [day, month, year].join(separator);
+}
+
 
 
 

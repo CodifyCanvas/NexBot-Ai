@@ -2,7 +2,7 @@ import { auth } from "@/auth";
 import { checkAdmin, DeleteUser, getUserGeneralStats } from "@/lib/actions/admin";
 import { NextRequest, NextResponse } from "next/server";
 
-export async function GET(req: NextRequest, context: { params: { id: string } }) {
+export async function GET(req: NextRequest, { params } : { params: Promise<{ id: string }> }) {
   try {
     // Get session from the authentication provider
     const session = await auth();
@@ -18,7 +18,7 @@ export async function GET(req: NextRequest, context: { params: { id: string } })
           return NextResponse.json({ error: 'Forbidden: Admin access required' }, { status: 403 });
         }
 
-    const { id } = await context.params;
+    const { id } = await params;
 
 
     // Call fetch user stats
@@ -34,7 +34,7 @@ export async function GET(req: NextRequest, context: { params: { id: string } })
 
 export async function DELETE(
   req: NextRequest,
-  context: { params: { id: string } }
+  { params } : { params: Promise<{ id: string }> }
 ) {
   try {
     // Step 1: Authenticate the request
@@ -58,7 +58,7 @@ export async function DELETE(
     }
 
     // Step 3: Validate and parse the user ID from URL
-    const { id } = context.params;
+    const { id } = await params;
     const targetUserId = Number(id);
 
     if (isNaN(targetUserId)) {
@@ -77,16 +77,16 @@ export async function DELETE(
       },
       { status: 200 }
     );
-  } catch (err: any) {
-    const errorMessage = err?.message || "Unknown server error";
-    console.error("[DELETE /api/admin/user/[id]]:", errorMessage);
+  } catch (err: unknown) {
+  const errorMessage = err instanceof Error ? err.message : "Unknown server error";
+  console.error("[DELETE /api/admin/user/[id]]:", errorMessage);
 
-    return NextResponse.json(
-      {
-        error: "Internal Server Error",
-        message: errorMessage,
-      },
-      { status: 500 }
-    );
-  }
+  return NextResponse.json(
+    {
+      error: "Internal Server Error",
+      message: errorMessage,
+    },
+    { status: 500 }
+  );
+}
 }

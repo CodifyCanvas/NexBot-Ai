@@ -5,7 +5,7 @@ import { auth } from "@/auth";
 import { checkAdmin } from "@/lib/actions/admin";
 import { updateRespondedStatus } from "@/lib/actions/contact";
 
-export async function POST(req: NextRequest, context: { params: { id: string } }) {
+export async function POST(req: NextRequest, { params } : { params: Promise<{ id: string }> }) {
   try {
     // 1. Authenticate user
     const session = await auth();
@@ -22,7 +22,7 @@ export async function POST(req: NextRequest, context: { params: { id: string } }
     }
 
     // 3. Parse and validate message ID
-    const { id } = await context.params
+    const { id } = await params
     const messageId = Number(id);
     if (isNaN(messageId)) {
       return NextResponse.json({ error: "Invalid message ID." }, { status: 400 });

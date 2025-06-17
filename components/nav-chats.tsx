@@ -25,7 +25,6 @@ import {
   SidebarGroupLabel,
   SidebarMenu,
   SidebarMenuAction,
-  SidebarMenuBadge,
   SidebarMenuButton,
   SidebarMenuItem,
   useSidebar,
@@ -68,7 +67,7 @@ export function NavChat({ chats, label, favoriteList = [], showActive }: NavChat
 
       if (res.ok) {
         toast.custom(
-        (id) => (
+        () => (
           <div
             className="isolate p-4 w-80 bg-green-300/50 dark:bg-green-300/20 backdrop-blur-2xl shadow-lg md:outline-1 outline-white/20 border dark:border-none border-black/10 md:rounded-md flex items-center gap-2"
           >
@@ -109,7 +108,7 @@ export function NavChat({ chats, label, favoriteList = [], showActive }: NavChat
 
       if (res.ok) {
         toast.custom(
-        (id) => (
+        () => (
           <div
             className="isolate p-4 w-80 bg-green-300/50 dark:bg-green-300/20 backdrop-blur-2xl shadow-lg md:outline-1 outline-white/20 border dark:border-none border-black/10 md:rounded-md flex items-center gap-2"
           >
@@ -140,7 +139,7 @@ export function NavChat({ chats, label, favoriteList = [], showActive }: NavChat
     try {
       await navigator.clipboard.writeText(url)
       toast.custom(
-        (id) => (
+        () => (
           <div
             className="isolate p-4 w-80 bg-green-300/50 dark:bg-green-300/20 backdrop-blur-2xl shadow-lg md:outline-1 outline-white/20 border dark:border-none border-black/10 md:rounded-md flex items-center gap-2"
           >

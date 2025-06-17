@@ -19,7 +19,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { CircleCheckIcon } from "lucide-react";
+import { CircleCheckIcon, Eye, EyeClosed } from "lucide-react";
 import { newPasswordSchema } from "@/lib/zod/schema";
 import Spinner from "../Spinner";
 
@@ -32,8 +32,11 @@ interface NewPasswordFieldsProps {
 }
 
 const NewPasswordFields: React.FC<NewPasswordFieldsProps> = ({ onClose }) => {
-    const [loading, setloading] = useState(false);
-  
+  const [loading, setloading] = useState(false);
+
+  const [showNewPassword, setShowNewPassword] = useState(false)
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
+
   const newPassForm = useForm<NewPasswordFormValues>({
     resolver: zodResolver(newPasswordSchema),
     defaultValues: { newPassword: "", confirmPassword: "" },
@@ -52,20 +55,20 @@ const NewPasswordFields: React.FC<NewPasswordFieldsProps> = ({ onClose }) => {
         toast.error("Failed to update password.", {
           richColors: true,
           position: 'top-center',
-        }); 
+        });
         return;
       }
 
-      toast.custom((id) => (
-              <div className="isolate p-4 w-80 bg-green-300/50 dark:bg-green-300/20 backdrop-blur-2xl shadow-lg md:outline-1 outline-white/20 border dark:border-none border-black/10 md:rounded-md flex items-center gap-2">
-                <CircleCheckIcon size={17} className="text-green-800 dark:text-green-300" />
-                <span className="font-semibold text-sm whitespace-nowrap overflow-hidden text-green-800 dark:text-green-300 text-ellipsis">
-                  Password Updated Successfully
-                </span>
-              </div>
-            ), {
-              position: 'top-center',
-            });
+      toast.custom(() => (
+        <div className="isolate p-4 w-80 bg-green-300/50 dark:bg-green-300/20 backdrop-blur-2xl shadow-lg md:outline-1 outline-white/20 border dark:border-none border-black/10 md:rounded-md flex items-center gap-2">
+          <CircleCheckIcon size={17} className="text-green-800 dark:text-green-300" />
+          <span className="font-semibold text-sm whitespace-nowrap overflow-hidden text-green-800 dark:text-green-300 text-ellipsis">
+            Password Updated Successfully
+          </span>
+        </div>
+      ), {
+        position: 'top-center',
+      });
 
       onClose();
     } catch (err) {
@@ -88,7 +91,13 @@ const NewPasswordFields: React.FC<NewPasswordFieldsProps> = ({ onClose }) => {
             <FormItem>
               <FormLabel>New Password</FormLabel>
               <FormControl>
-                <Input type="password" placeholder="••••••••" {...field} />
+                <div className="relative">
+                  {showNewPassword
+                    ? <EyeClosed onClick={() => setShowNewPassword(false)} size={15} className="absolute right-3 bottom-1/2 translate-y-1/2 text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white transition-colors cursor-pointer" />
+                    : <Eye onClick={() => setShowNewPassword(true)} size={15} className="absolute right-3 bottom-1/2 translate-y-1/2 text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white transition-colors cursor-pointer" />
+                  }
+                  <Input id="new-password" type={showNewPassword ? "text" : "password"} placeholder="••••••" {...field} />
+                </div>
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -101,7 +110,13 @@ const NewPasswordFields: React.FC<NewPasswordFieldsProps> = ({ onClose }) => {
             <FormItem>
               <FormLabel>Confirm Password</FormLabel>
               <FormControl>
-                <Input type="password" placeholder="••••••••" {...field} />
+                <div className="relative">
+                  {showConfirmPassword
+                    ? <EyeClosed onClick={() => setShowConfirmPassword(false)} size={15} className="absolute right-3 bottom-1/2 translate-y-1/2 text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white transition-colors cursor-pointer" />
+                    : <Eye onClick={() => setShowConfirmPassword(true)} size={15} className="absolute right-3 bottom-1/2 translate-y-1/2 text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white transition-colors cursor-pointer" />
+                  }
+                  <Input id="confirm-password" type={showConfirmPassword ? "text" : "password"} placeholder="••••••" {...field} />
+                </div>
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -113,7 +128,7 @@ const NewPasswordFields: React.FC<NewPasswordFieldsProps> = ({ onClose }) => {
               Cancel
             </Button>
           </DialogClose>
-                        <Button disabled={loading} type="submit" className="bg-gradient-to-tr from-blue-500 to-blue-800 text-white sm:w-20 hover:from-blue-700 hover:to-blue-800 transition-all duration-300">{loading ? <Spinner /> : 'Change'}</Button>
+          <Button disabled={loading} type="submit" className="bg-gradient-to-tr from-blue-500 to-blue-800 text-white sm:w-20 hover:from-blue-700 hover:to-blue-800 transition-all duration-300">{loading ? <Spinner /> : 'Change'}</Button>
         </DialogFooter>
       </form>
     </Form>

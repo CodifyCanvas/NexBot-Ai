@@ -5,18 +5,27 @@ export interface Chat {
   title: string
   color?: number
   isShareable: boolean
-  createdAt: Date // or `Date` if you parse it
+  createdAt: Date // 
 }
 
 export interface User {
   id: number;
-  profileImg: string;
+  profileImg: string | null;
   name: string;
   email: string;
   password?: string;
   admin: boolean;
   verified: boolean;
-  createdAt?: Date; // or string, depending on how it's returned from your DB/ORM
+  createdAt?: Date;
+}
+
+export interface UserTable {
+  id: number;
+  profileImg: string | null;
+  name: string;
+  email: string;
+  admin: boolean;
+  verified: boolean;
 }
 
 export interface AdminStats {
@@ -42,4 +51,31 @@ export type ContactTable = {
   message: string;
   respondedAt: Date | null;
   createdAt: Date;
+};
+
+export type UserConversationStats = {
+  date: string;
+  chat: number;
+  message: number;
+  botResponse: number;
+};
+
+export type UserGeneralStatsData = {
+  id: number;
+  name: string;
+  profileImg: string | null;
+  email: string;
+  admin: boolean;
+  verified: boolean;
+  createdAt: string;
+  totalMessages: number;
+  totalChats: number;
+  totalBotResponses: number;
+};
+
+export type DailyStat = {
+  date: string;   // 'YYYY-MM-DD'
+  users: number;
+  chats: number;
+  messages: number;
 };

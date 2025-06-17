@@ -1,5 +1,5 @@
 "use server";
-import { chats, favoriteChats, messages, users } from "@/drizzle/schema";
+import { chats, favoriteChats, messages } from "@/drizzle/schema";
 import { db } from "@/lib/db";
 import { and, desc, eq, inArray, or, sql } from 'drizzle-orm';
 import { ChatResult } from "../definations";
@@ -41,13 +41,13 @@ export async function fetchFavoriteChats(userId: number) {
 
 
 export async function fetchChat(chatId: string) {
-    const chat = await db
-      .select()
-      .from(chats)
-      .where(eq(chats.chatId, chatId))
-      .limit(1);
+  const chat = await db
+    .select()
+    .from(chats)
+    .where(eq(chats.chatId, chatId))
+    .limit(1);
 
-    return chat;
+  return chat;
 }
 
 
@@ -57,8 +57,10 @@ export async function favoriteChat(userId: number, chatId: string, value: boolea
     // Check if the chat is already in favorites
     const existingFavorite = await db.select()
       .from(favoriteChats)
-      .where(eq(favoriteChats.userId, userId))
-      .where(eq(favoriteChats.chatId, chatId));
+      .where(and(
+        eq(favoriteChats.userId, userId),
+        eq(favoriteChats.chatId, chatId)
+      ));
 
     if (existingFavorite.length === 0) {
       // If not in favorites, add it
@@ -74,14 +76,18 @@ export async function favoriteChat(userId: number, chatId: string, value: boolea
     // Check if the chat exists in favorites
     const existingFavorite = await db.select()
       .from(favoriteChats)
-      .where(eq(favoriteChats.userId, userId))
-      .where(eq(favoriteChats.chatId, chatId));
+      .where(and(
+        eq(favoriteChats.userId, userId),
+        eq(favoriteChats.chatId, chatId)
+      ));
 
     if (existingFavorite.length > 0) {
       // If it exists, remove it
       await db.delete(favoriteChats)
-        .where(eq(favoriteChats.userId, userId))
-        .where(eq(favoriteChats.chatId, chatId));
+        .where(and(
+          eq(favoriteChats.userId, userId),
+          eq(favoriteChats.chatId, chatId)
+        ));
       return { success: true, message: "Chat removed from favorites!" };
     } else {
       return { success: false, message: 'Oops! This chat is not in your favorites yet.' };
@@ -140,14 +146,15 @@ export async function deleteAllChats(userId: number) {
 }
 
 // Toggle chat share status (private ↔ shareable)
-export async function toggleShare( userId: number, chatId: string, isShareable: boolean) {
-  const result = await db
+export async function toggleShare(userId: number, chatId: string, isShareable: boolean) {
+  const [result] = await db
     .update(chats)
-    .set({ isShareable: isShareable })
-    .where(eq(chats.userId, userId))
-    .where(eq(chats.chatId, chatId));
+    .set({ isShareable })
+    .where(
+      and(eq(chats.userId, userId), eq(chats.chatId, chatId))
+    );
 
-  return result;
+  return result.affectedRows > 0;
 }
 
 export async function getUserChatsSearch(userId: number, query: string): Promise<ChatResult[]> {

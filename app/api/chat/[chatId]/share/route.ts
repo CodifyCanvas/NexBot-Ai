@@ -5,7 +5,7 @@ import { auth } from '@/auth';
 import { toggleShare } from '@/lib/actions/chat';
 
 // PATCH: Toggle shareable status of a chat
-export async function PATCH(req: NextRequest, context: { params: { chatId: string } }) {
+export async function PATCH(req: NextRequest,  { params } : { params: Promise<{ chatId: string }> }) {
   try {
     const session = await auth();
     const userId = session?.user?.id;
@@ -15,11 +15,11 @@ export async function PATCH(req: NextRequest, context: { params: { chatId: strin
     }
 
     const { isShareable } = await req.json();
-    const { chatId } = await context.params;
+    const { chatId } = await params;
 
     const result = await toggleShare(Number(userId), chatId, isShareable);
 
-    if (result.rowsAffected === 0) {
+    if (!result) {
       return NextResponse.json(
         { message: 'No update — check chat ID or permissions.' },
         { status: 202 }

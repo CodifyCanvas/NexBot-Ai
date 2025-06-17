@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/auth";
 import { checkAdmin, verifiedUser } from "@/lib/actions/admin";
 
-export async function PATCH(req: NextRequest, context: { params: { id: string } }) {
+export async function PATCH(req: NextRequest, { params } : { params: Promise<{ id: string }> }) {
   // Get session from auth provider
   const session = await auth();
   const userId = session?.user?.id;
@@ -16,7 +16,7 @@ export async function PATCH(req: NextRequest, context: { params: { id: string } 
     return NextResponse.json({ error: "Forbidden: Admin access required" }, { status: 403 });
   }
 
-  const { id } = await context.params;
+  const { id } = await params;
   const body = await req.json();
   const value = body.value;
 

@@ -13,9 +13,9 @@ import Spinner from './Spinner'
 
 export default function Chats() {
   const pathname = usePathname()
-  
+
   const fetcher = useCallback((url: string) => fetch(url).then(res => res.json()), [])
-  
+
   // SWR hook to fetch all chats; refreshes automatically
   const { data: chats, mutate: mutateChats, isLoading: isLoadingChats } = useSWR<Chat[]>('/api/chats', fetcher)
 
@@ -54,7 +54,9 @@ export default function Chats() {
   // Render favorite chats if available, then all chats
   return (
     <>
-      {favorites?.length > 0 && <NavChat label="Favorites" chats={favorites} />}
+      {Array.isArray(favorites) && favorites.length > 0 && (
+        <NavChat label="Favorites" chats={favorites} />
+      )}
       <NavChat label="All Chats" chats={chats || []} favoriteList={favorites || []} showActive={true} />
     </>
   )

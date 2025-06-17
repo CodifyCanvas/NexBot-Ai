@@ -3,7 +3,7 @@ import { checkAdmin } from "@/lib/actions/admin";
 import { fetchContactMessages, saveContactMessage } from "@/lib/actions/contact";
 import { NextRequest, NextResponse } from "next/server";
 
-export async function GET(req: NextRequest) {
+export async function GET() {
   try {
     const session = await auth();
 

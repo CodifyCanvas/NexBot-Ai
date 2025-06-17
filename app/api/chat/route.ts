@@ -6,7 +6,7 @@ import { generateChatId } from '@/lib/uuid';
 import { generateGeminiResponse } from '@/lib/gemini/gemini';
 import { getRandomInt1to10 } from '@/lib/utils';
 
-export async function GET(req: Request) {
+export async function GET(req: NextRequest) {
   const session = await auth();
 
   if (!session?.user?.id) {

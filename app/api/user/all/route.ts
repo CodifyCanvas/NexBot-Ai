@@ -1,9 +1,9 @@
 // app/api/chat/route.ts
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { auth } from '@/auth';
 import { checkAdmin, fetchAllUsers} from '@/lib/actions/admin';
 
-export async function GET(req: NextRequest) {
+export async function GET() {
   try {
     const session = await auth();
 

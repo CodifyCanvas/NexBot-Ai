@@ -18,7 +18,7 @@ import { Card } from '@/components/ui/card';
 import { contactUsFormSchema } from '@/lib/zod/schema';
 import { toast } from 'sonner';
 import { CircleCheckIcon } from 'lucide-react';
-import { Reference, useState } from 'react';
+import { useState } from 'react';
 import Spinner from './Spinner';
 
 type ContactFormData = z.infer<typeof contactUsFormSchema>;
@@ -90,7 +90,7 @@ export default function ContactForm() {
               <FormItem>
                 <FormLabel>Name</FormLabel>
                 <FormControl>
-                  <Input placeholder="e.g. John Doe" {...field} />
+                  <Input id='contact-name-field' placeholder="e.g. John Doe" {...field} />
                 </FormControl>
                 <FormMessage className="text-start" />
               </FormItem>
@@ -105,7 +105,7 @@ export default function ContactForm() {
               <FormItem>
                 <FormLabel>Email</FormLabel>
                 <FormControl>
-                  <Input type="email" placeholder="e.g. johndoe@example.com" {...field} />
+                  <Input id='contact-email-field' type="email" placeholder="e.g. johndoe@example.com" {...field} />
                 </FormControl>
                 <FormMessage className="text-start" />
               </FormItem>
@@ -122,6 +122,7 @@ export default function ContactForm() {
                 <FormControl>
                   <Textarea
                     placeholder="Write your message..."
+                    id='contact-message-field'
                     className="resize-none h-36 sm:h-52 md:h-52 lg:h-[10rem] overflow-y-auto custom-scrollbar"
                     {...field}
                   />

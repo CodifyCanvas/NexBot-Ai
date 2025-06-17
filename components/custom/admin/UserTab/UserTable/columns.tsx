@@ -9,10 +9,14 @@ import { DataTableColumnHeader } from '@/components/DataTable/data-table-column-
 import ToggleVerified from './Toggle-verified';
 import { DeleteRowDialogButton } from '@/components/DataTable/delete-table-row-dialog';
 import { refetchUsers } from '@/lib/swr/mutateUsers';
-import { User } from '@/lib/definations';
+import { UserTable } from '@/lib/definations';
 
-export const columns: ColumnDef<User>[] = [
-  // ✅ Row selection checkbox column
+// Extended column type to support `responsive`
+type ResponsiveColumn<T> = ColumnDef<T, unknown> & {
+  responsive?: 'base' | 'sm' | 'md' | 'lg' | 'xl' | 'all';
+};
+
+export const columns: ResponsiveColumn<UserTable>[] = [
   {
     id: 'select',
     header: ({ table }) => (
@@ -36,19 +40,17 @@ export const columns: ColumnDef<User>[] = [
     enableHiding: false,
   },
 
-  // ✅ User ID (conditionally responsive)
   {
-  accessorKey: 'id',
-  responsive: 'sm',
-  header: ({ column }) => (
-    <DataTableColumnHeader column={column} title="#" />
-  ),
-  cell: ({ row }) => (
-    <span className="font-medium">{row.index + 1}</span>
-  ),
-},
+    accessorKey: 'id',
+    responsive: 'sm',
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="#" />
+    ),
+    cell: ({ row }) => (
+      <span className="font-medium">{row.index + 1}</span>
+    ),
+  },
 
-  // ✅ User name with avatar
   {
     accessorKey: 'name',
     header: 'Name',
@@ -57,7 +59,7 @@ export const columns: ColumnDef<User>[] = [
       return (
         <div className="flex items-center gap-2">
           <Avatar>
-            <AvatarImage src={profileImg} />
+            <AvatarImage src={profileImg ? profileImg : undefined} />
             <AvatarFallback className={getColorByLetter(name)}>
               {name?.charAt(0).toUpperCase()}
             </AvatarFallback>
@@ -68,7 +70,6 @@ export const columns: ColumnDef<User>[] = [
     },
   },
 
-  // ✅ Email column with sortable header
   {
     accessorKey: 'email',
     header: ({ column }) => (
@@ -77,15 +78,12 @@ export const columns: ColumnDef<User>[] = [
     cell: ({ row }) => <span>{row.original.email}</span>,
   },
 
-  // ✅ Admin badge
   {
     accessorKey: 'admin',
     responsive: 'md',
     header: 'Admin',
     cell: ({ row }) => {
-      const { admin } = row.original;
-      const isAdmin = Boolean(admin);
-
+      const isAdmin = Boolean(row.original.admin);
       return (
         <div className="flex justify-center w-20">
           <Badge
@@ -102,14 +100,12 @@ export const columns: ColumnDef<User>[] = [
     },
   },
 
-  // ✅ Verified toggle switch
   {
     accessorKey: 'verified',
     header: 'Verified',
     cell: ({ row }) => <ToggleVerified user={row.original} />,
   },
 
-  // ✅ Actions (currently: Delete)
   {
     id: 'actions',
     header: 'Actions',

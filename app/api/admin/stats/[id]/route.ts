@@ -2,26 +2,26 @@ import { auth } from "@/auth";
 import { checkAdmin, getUserConversationStats } from "@/lib/actions/admin";
 import { NextRequest, NextResponse } from "next/server";
 
-export async function POST(req: NextRequest, context: { params: { id: string } }) {
+export async function POST(req: NextRequest, { params } : { params: Promise<{ id: string }> })
+ {
   try {
+    
     // Get session from the authentication provider
     const session = await auth();
     const userId = session?.user?.id; // Retrieve userId from session
-
+    const { duration } = await req.json();
+    
     if (!userId) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
-
+    
     const isAdmin = await checkAdmin(Number(userId));
-
+    
     if (!isAdmin) {
       return NextResponse.json({ error: 'Forbidden: Admin access required' }, { status: 403 });
     }
-
-    const { id } = await context.params;
-
-    const body = await req.json();
-    const duration = Number(body.value);
+  
+    const { id } = await params;
 
     if (isNaN(duration) || duration < 0) {
       return NextResponse.json({ error: 'Invalid duration' }, { status: 400 });

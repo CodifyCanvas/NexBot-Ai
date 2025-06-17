@@ -1,8 +1,9 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import {
+  Command,
   Link,
   Link2,
   LogOut,
@@ -41,6 +42,8 @@ import {
   ProfileSkeleton,
   ToggleFavoriteSkeleton,
 } from './Skeletons/NavActionFallbacks';
+import useSWR from 'swr';
+import { fetchFavoriteStatus } from '@/lib/swr/mutateUsers';
 
 export function NavActions() {
   const { chatId } = useParams() as { chatId?: string };
@@ -52,20 +55,17 @@ export function NavActions() {
   const [isChatLoading, setIsChatLoading] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
 
-  // Fetch list of favorite chats and check current chat
-  const fetchFavoriteStatus = async () => {
-    try {
-      const res = await fetch('/api/chats/favorites');
-      const data = await res.json();
-      const favoriteIds = (data || []).map((c: Chat) => c.chatId.toString());
-      setIsFavorite(chatId ? favoriteIds.includes(chatId) : false);
-    } catch (err) {
-      console.error('Error fetching favorites:', err);
-    }
-  };
+  const fetcher = (url: string) => fetch(url).then(res => res.json());
+  const { data } = useSWR('/api/chats/favorites', fetcher);
 
-  // Fetch chat details including creator (owner) ID
-  const fetchChatDetails = async () => {
+  useEffect(() => {
+    if (!data || !chatId) return;
+    const favoriteIds = data.map((c: Chat) => c.chatId.toString());
+    setIsFavorite(favoriteIds.includes(chatId));
+  }, [data, chatId]);
+
+  // Fetch chat details
+  const fetchChatDetails = useCallback(async () => {
     try {
       setIsChatLoading(true);
       const res = await fetch(`/api/chat/${chatId}`);
@@ -77,7 +77,7 @@ export function NavActions() {
     } finally {
       setIsChatLoading(false);
     }
-  };
+  }, [chatId]);
 
   // Toggle favorite state
   const handleToggleFavorite = async () => {
@@ -125,10 +125,10 @@ export function NavActions() {
   // On load, fetch chat and favorite state
   useEffect(() => {
     if (chatId && user) {
-      fetchFavoriteStatus();
+      // fetchFavoriteStatus();
       fetchChatDetails();
     }
-  }, [chatId, user]);
+  }, [chatId, user, fetchChatDetails]);
 
   if (userError) return null;
 
@@ -151,6 +151,7 @@ export function NavActions() {
       });
     }
   };
+
 
   const isOwner = user && chatDetails && user.id?.toString() === chatDetails.userId?.toString();
 
@@ -214,7 +215,7 @@ export function NavActions() {
           ) : (
             <button className="h-8 w-8 rounded-full flex items-center justify-center cursor-pointer">
               <Avatar>
-                <AvatarImage src={user.profileImg} />
+                <AvatarImage src={user.profileImg ? user.profileImg : undefined} />
                 <AvatarFallback className={getColorByLetter(user.name)}>
                   {user.name.charAt(0).toUpperCase()}
                 </AvatarFallback>
@@ -231,8 +232,13 @@ export function NavActions() {
                   <SidebarGroupContent>
                     <SidebarMenu>
                       <SidebarMenuItem>
-                        <SidebarMenuButton onClick={() => router.push('/chat/profile')} className="hover:bg-blue-300 dark:hover:bg-blue-200/20">
-                          <UserRound /> <span>Profile</span>
+                        <SidebarMenuButton onClick={() => router.push('/chat/profile')} className="hover:bg-blue-300 flex flex-row justify-between items-center dark:hover:bg-blue-200/20">
+                          <div className='flex flex-row items-center justify-start gap-2'>
+                            <UserRound size={17} /> <span>Profile</span>
+                          </div>
+                          <div>
+                            <p className="text-slate-400 dark:text-slate-500 flex flex-row gap-1 items-center justify-end"><Command size={15} /><span>Alt + P</span></p>
+                          </div>
                         </SidebarMenuButton>
                       </SidebarMenuItem>
                     </SidebarMenu>

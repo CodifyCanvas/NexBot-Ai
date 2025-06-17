@@ -29,7 +29,10 @@ export async function DELETE(req: NextRequest) {
       await DeleteUser(id); // your function handles error if user doesn't exist
     }
 
-    return NextResponse.json({ message: "Users deleted successfully." }, { status: 200 });
+    return NextResponse.json(
+      { message: `${ids.length} user${ids.length > 1 ? 's' : ''} deleted successfully.` },
+      { status: 200 }
+    );
 
   } catch (err) {
     console.error("Bulk Delete /api/user/delete-many-user Error:", err);

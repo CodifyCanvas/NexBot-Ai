@@ -14,7 +14,7 @@ import {
 } from '@tanstack/react-table';
 
 import {
-  Table,
+  Table as UITable,
   TableBody,
   TableCell,
   TableHead,
@@ -30,29 +30,33 @@ import { UnifiedDataTableActions } from './unified-data-table-actions';
 import { MessageDetailsDrawer } from '../custom/admin/ContactTab/UserDrawer/message-details-drawer';
 import { UserDetailsSheet } from '../custom/admin/UserTab/UserSheet/user-details-sheet';
 
-interface UnifiedDataTableProps<TData, TValue> {
-  columns: ColumnDef<TData, TValue>[];
+interface UnifiedDataTableProps<TData> {
+  columns: ColumnDef<TData>[]; // Remove TValue
   data: TData[];
   mode: 'user' | 'inbox';
 }
 
-// Global filter: name or email
-function globalFilterFn<TData>(
-  row: any,
+const globalFilterFn = <TData extends { name?: string; email?: string }>(
+  row: { original: TData },
   _columnId: string,
   filterValue: string
-) {
+): boolean => {
   const search = filterValue.toLowerCase();
-  const name = row.original.name?.toLowerCase() ?? '';
-  const email = row.original.email?.toLowerCase() ?? '';
+  const name = row.original.name?.toLowerCase?.() ?? '';
+  const email = row.original.email?.toLowerCase?.() ?? '';
   return name.includes(search) || email.includes(search);
-}
+};
 
-export function UnifiedDataTable<TData, TValue>({
+
+
+
+export function UnifiedDataTable<
+  TData extends { id: string | number; name?: string; email?: string },
+>({
   columns,
   data,
   mode,
-}: UnifiedDataTableProps<TData, TValue>) {
+}: UnifiedDataTableProps<TData>){
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [globalFilter, setGlobalFilter] = useState('');
@@ -62,7 +66,7 @@ export function UnifiedDataTable<TData, TValue>({
   const [selectedId, setSelectedId] = useState<string | number | null>(null);
   const [isSheetOpen, setIsSheetOpen] = useState(false);
 
-  const table = useReactTable({
+  const table = useReactTable<TData>({
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
@@ -101,14 +105,14 @@ export function UnifiedDataTable<TData, TValue>({
           className="max-w-sm py-2 bg-white/50 backdrop-blur-md shadow-lg outline-1 outline-white/20 transition-all duration-300"
         />
         <div className="flex flex-row items-center gap-2 ml-auto">
-          <UnifiedDataTableActions table={table} mode={mode} />
+          <UnifiedDataTableActions<TData> table={table} mode={mode} />
           <DataTableViewOptions table={table} />
         </div>
       </div>
 
       {/* Table */}
       <div className="rounded-md border">
-        <Table className="w-full border-separate border-spacing-y-2">
+        <UITable className="w-full border-separate border-spacing-y-2">
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow className='bg-transparent hover:bg-blue-500/20 transition-colors' key={headerGroup.id}>
@@ -172,7 +176,7 @@ export function UnifiedDataTable<TData, TValue>({
               </TableRow>
             )}
           </TableBody>
-        </Table>
+        </UITable>
       </div>
 
       {/* Pagination */}

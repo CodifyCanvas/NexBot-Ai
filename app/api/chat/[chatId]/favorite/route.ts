@@ -4,7 +4,7 @@ import { auth } from '@/auth';
 import { favoriteChat } from '@/lib/actions/chat';
 
 // Toggling Chat to Favorites
-export async function POST(req: NextRequest, context: { params: { chatId: string } }) {
+export async function POST(req: NextRequest, { params } : { params: Promise<{ chatId: string }> }) {
   try {
     // Get session from the authentication provider
     const session = await auth();
@@ -15,7 +15,7 @@ export async function POST(req: NextRequest, context: { params: { chatId: string
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { chatId } = await context.params;
+    const { chatId } = await params;
 
     // Call favoriteChat function to add/remove from favorites based on value
     const response = await favoriteChat(Number(userId), chatId, value);

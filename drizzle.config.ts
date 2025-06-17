@@ -6,6 +6,9 @@ export default defineConfig({
   out: './drizzle/migrations',    // Path for migration output
   dialect: 'mysql',                   // MySQL dialect
   dbCredentials: {
-    url: `${process.env.DATABASE_URL}`,   // Use DATABASE_URL from environment variables
+  url: process.env.DATABASE_URL!,
+  ssl: {
+    ca: process.env.MYSQL_CA_CERT?.replace(/\\n/g, '\n'),
   },
+},
 });

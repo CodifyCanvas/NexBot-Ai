@@ -55,7 +55,7 @@ const ToggleVerified: React.FC<ToggleVerifiedProps> = ({ user }) => {
       toast.error('Could not update verification status. Please try again.', {
         richColors: true,
       });
-      setIsVerified((prev) => !nextState); // Rollback on failure
+      setIsVerified(() => !nextState); // Rollback on failure
     } finally {
       setIsUpdating(false);
     }

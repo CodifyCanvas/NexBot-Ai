@@ -5,7 +5,7 @@ import { auth } from "@/auth";
 import { fetchChat } from "@/lib/actions/chat";
 import { fetchMessages } from "@/lib/actions/message";
 
-export async function GET(req: NextRequest, context: { params: { chatId: string } }) {
+export async function GET(req: NextRequest,  { params } : { params: Promise<{ chatId: string }> }) {
   try {
     const session = await auth();
     if (!session?.user?.id) {
@@ -14,7 +14,7 @@ export async function GET(req: NextRequest, context: { params: { chatId: string 
 
     const userId = Number(session.user.id);
     // Await params to resolve the Promise
-    const { chatId } = await context.params;
+    const { chatId } = await params;
 
     // 1. Fetch chat details
     const chatResult = await fetchChat(chatId);

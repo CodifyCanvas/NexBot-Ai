@@ -1,9 +1,8 @@
-// ProfileImageDialog.tsx
 "use client";
 
 import React, { useState, useMemo } from "react";
 import { z } from "zod";
-import { useForm, Controller } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   Dialog,
@@ -30,6 +29,7 @@ import { imageSchema } from "@/lib/zod/schema";
 import Spinner from "../Spinner";
 import Image from "next/image";
 
+// 👇 Infer the proper schema type
 type FormValues = z.infer<typeof imageSchema>;
 
 interface Props {
@@ -42,11 +42,12 @@ const ProfileImageDialog: React.FC<Props> = ({ onClose }) => {
 
   const form = useForm<FormValues>({
     resolver: zodResolver(imageSchema),
-    defaultValues: { file: null },
+    defaultValues: { file: undefined as unknown as File },
   });
 
   const selectedFile = form.watch("file");
 
+  // 👇 File preview URL
   const previewUrl = useMemo(() => {
     if (selectedFile instanceof File) {
       return URL.createObjectURL(selectedFile);
@@ -137,8 +138,9 @@ const ProfileImageDialog: React.FC<Props> = ({ onClose }) => {
                     <input
                       type="file"
                       accept="image/*"
+                      id="image-select-field"
                       onChange={(e) => {
-                        const file = e.target.files?.[0] || null;
+                        const file = e.target.files?.[0] ?? null;
                         field.onChange(file);
                       }}
                       className="cursor-pointer text-gray-300 h-10 w-full bg-white/5 backdrop-blur-xl rounded-lg content-center px-3"

@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/auth';
 import { checkAdmin, getAdminStats, getDailyStats } from '@/lib/actions/admin';
 
-export async function GET(req: NextRequest) {
+export async function GET() {
   try {
     const session = await auth();
 

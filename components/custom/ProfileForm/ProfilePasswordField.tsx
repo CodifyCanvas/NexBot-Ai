@@ -25,6 +25,7 @@ import { toast } from "sonner";
 import NewPasswordFields from "./newPasswordFields";
 import { verifyPasswordSchema } from "@/lib/zod/schema";
 import Spinner from "../Spinner";
+import { Eye, EyeClosed } from "lucide-react";
 
 
 
@@ -37,6 +38,7 @@ interface ProfilePasswordFieldProps {
 const ProfilePasswordField: React.FC<ProfilePasswordFieldProps> = ({ onClose }) => {
   const [step, setStep] = useState<1 | 2>(1);
   const [loading, setloading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const verifyForm = useForm<VerifyFormValues>({
     resolver: zodResolver(verifyPasswordSchema),
@@ -88,10 +90,16 @@ const ProfilePasswordField: React.FC<ProfilePasswordFieldProps> = ({ onClose }) 
               control={verifyForm.control}
               name="currentPassword"
               render={({ field }) => (
-                <FormItem>
+                <FormItem> 
                   <FormLabel>Current Password</FormLabel>
                   <FormControl>
-                    <Input type="password" placeholder="••••••••" {...field} />
+                    <div className="relative">
+                    {showPassword
+                      ? <EyeClosed onClick={() => setShowPassword(false)} size={15} className="absolute right-3 bottom-1/2 translate-y-1/2 text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white transition-colors cursor-pointer" />
+                      : <Eye onClick={() => setShowPassword(true)} size={15} className="absolute right-3 bottom-1/2 translate-y-1/2 text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white transition-colors cursor-pointer" />
+                    }
+                    <Input id="current-password-field" type={showPassword ? "text" : "password"} placeholder="••••••" {...field} />
+                  </div>
                   </FormControl>
                   <FormMessage />
                 </FormItem>

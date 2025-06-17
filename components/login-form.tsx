@@ -17,9 +17,11 @@ import {
 } from "@/components/ui/form"
 import { loginSchema } from "@/lib/zod/schema"
 import { useState } from "react"
-import { signIn } from "next-auth/react" // ✅ use this
+import { signIn } from "next-auth/react"
 import { useRouter } from "next/navigation"
 import { toast } from "sonner"
+import Link from "next/link"
+import { Eye, EyeClosed } from "lucide-react"
 
 
 export function LoginForm({
@@ -28,6 +30,7 @@ export function LoginForm({
 }: React.ComponentProps<"form">) {
 
   const [loading, setLoading] = useState(false)
+  const [showPassword, setShowPassword] = useState(false)
   const router = useRouter();
 
   const form = useForm<z.infer<typeof loginSchema>>({
@@ -71,9 +74,8 @@ export function LoginForm({
         richColors: true,
       });
 
-      router.push(result.url ?? '/chat');
+      router.push('/chat');
     }
-    
   }
   
 
@@ -100,7 +102,7 @@ export function LoginForm({
               <FormItem>
                 <FormLabel>Email</FormLabel>
                 <FormControl>
-                  <Input id="email" type="email" placeholder="you@example.com" {...field} />
+                  <Input id="login-email" type="email" placeholder="you@example.com" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -123,7 +125,13 @@ export function LoginForm({
                   </a>
                 </div>
                 <FormControl>
-                  <Input id="password" type="password" placeholder="••••••" {...field} />
+                  <div className="relative">
+                    {showPassword
+                      ? <EyeClosed onClick={() => setShowPassword(false)} size={15} className="absolute right-3 bottom-1/2 translate-y-1/2 text-gray-300 hover:text-white transition-colors cursor-pointer" />
+                      : <Eye onClick={() => setShowPassword(true)} size={15} className="absolute right-3 bottom-1/2 translate-y-1/2 text-gray-300 hover:text-white transition-colors cursor-pointer" />
+                    }
+                    <Input id="login-password" type={showPassword ? "text" : "password"} placeholder="••••••" {...field} />
+                  </div>
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -141,9 +149,9 @@ export function LoginForm({
         {/* Footer */}
         <div className="text-center text-sm ">
           Don&apos;t have an account?{" "}
-          <a href="#" className="underline underline-offset-4 text-blue-400">
+          <Link href="/signup" className="underline underline-offset-4 text-blue-400">
             Sign up
-          </a>
+          </Link>
         </div>
       </form>
     </Form>

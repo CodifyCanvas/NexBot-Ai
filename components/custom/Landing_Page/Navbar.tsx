@@ -24,35 +24,37 @@ export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
 
   // Refs for animation targets
-  const logoRef = useRef(null);
-  const navRef = useRef(null);
-  const buttonRef = useRef(null);
+  const logoRef = useRef<HTMLDivElement | null>(null);
+const navRef = useRef<HTMLDivElement | null>(null);
+const buttonRef = useRef<HTMLButtonElement | null>(null);
 
   useEffect(() => {
-    // GSAP timeline
-    const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
+  const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
 
-// Animate logo
-tl.fromTo(
-  logoRef.current.children,
-  { y: -20, scale: 0.8, opacity: 0 },
-  { y: 0, scale: 1, opacity: 1, stagger: 0.2, delay: 0.3, duration: 0.6 },
-);
+  if (logoRef.current?.children) {
+    tl.fromTo(
+      Array.from(logoRef.current.children),
+      { y: -20, scale: 0.8, opacity: 0 },
+      { y: 0, scale: 1, opacity: 1, stagger: 0.2, delay: 0.3, duration: 0.6 }
+    );
+  }
 
-// Animate navigation links
-tl.fromTo(
-  navRef.current.children,
-  { y: -20, scale: 0.6, opacity: 0 },
-  { y: 0, scale: 1, opacity: 1, stagger: 0.2, duration: 0.6 },
-);
+  if (navRef.current?.children) {
+    tl.fromTo(
+      Array.from(navRef.current.children),
+      { y: -20, scale: 0.6, opacity: 0 },
+      { y: 0, scale: 1, opacity: 1, stagger: 0.2, duration: 0.6 }
+    );
+  }
 
-// Animate button
-tl.fromTo(
-  buttonRef.current,
-  { scale: 0.8, opacity: 0 },
-  { scale: 1, opacity: 1, stagger: 0.3, duration: 0.6 },
-);
-  }, []);
+  if (buttonRef.current) {
+    tl.fromTo(
+      buttonRef.current,
+      { scale: 0.8, opacity: 0 },
+      { scale: 1, opacity: 1, duration: 0.6 }
+    );
+  }
+}, []);
 
   useEffect(() => {
     function handleScroll() {
@@ -105,7 +107,8 @@ tl.fromTo(
         }}
       >
         {/* Logo */}
-        <div ref={logoRef} className="flex items-center gap-2">
+        <div ref={logoRef}>
+          <Link href="/" className="text-lg flex items-center gap-2 font-bold text-white">
           <Image
             src={Images.main_logo_transparent}
             alt="NexBot Logo"
@@ -113,7 +116,6 @@ tl.fromTo(
             height={30}
             priority
           />
-          <Link href="/" className="text-lg font-bold text-white">
             NexBot
           </Link>
         </div>

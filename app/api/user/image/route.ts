@@ -6,14 +6,17 @@ import fs from 'fs/promises';
 import { updateUserProfileImage } from '@/lib/actions/user'; // hypothetical DB update function
 
 // Helper to ensure directory exists
-async function ensureDirExists(dirPath: string) {
-    try {
-        await fs.mkdir(dirPath, { recursive: true });
-    } catch (e) {
-        // ignore if exists
+async function ensureDirExists(dirPath: string): Promise<void> {
+  try {
+    await fs.mkdir(dirPath, { recursive: true });
+  } catch (error) {
+    // If the error is something other than directory already exists, throw it
+    if ((error as NodeJS.ErrnoException).code !== 'EEXIST') {
+      throw error;
     }
+    // else ignore the error
+  }
 }
-
 // Parse multipart/form-data
 async function parseMultipartFormData(req: NextRequest) {
     const contentType = req.headers.get('content-type') || '';

@@ -11,7 +11,7 @@ import { CircleX } from 'lucide-react';
 import gsap from "gsap";
 
 const WelcomeScreen = () => {
-  const imageRef = useRef<HTMLParagraphElement>(null);
+  const imageRef = useRef<HTMLImageElement>(null);
   const titleRef = useRef<HTMLParagraphElement>(null);
   const subtitleRef = useRef<HTMLHeadingElement>(null);
   const cardRefs = useRef<HTMLElement[]>([]);

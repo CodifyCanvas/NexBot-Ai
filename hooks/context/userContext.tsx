@@ -40,8 +40,8 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
 
   // Reset context state without refetching
   const reset = useCallback(() => {
-    mutate(null, false);
-  }, [mutate]);
+  mutate(null as unknown as User, false);
+}, [mutate]);
 
   // Trigger a manual revalidation
   const refetch = useCallback(() => {

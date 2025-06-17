@@ -11,6 +11,7 @@ import {
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { Images, Names } from '@/constants/constants';
 import { UserProvider } from '@/hooks/context/userContext';
+import { useShortcuts } from '@/hooks/useShortcuts';
 import { cn } from '@/lib/utils';
 import { Separator } from '@radix-ui/react-dropdown-menu';
 import { useTheme } from 'next-themes';
@@ -31,6 +32,8 @@ export default function ChatLayout({ children }: ChatLayoutProps) {
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  useShortcuts();
 
   return (
     <SidebarProvider className="relative min-h-screen">
@@ -58,7 +61,7 @@ export default function ChatLayout({ children }: ChatLayoutProps) {
             </TooltipTrigger>
             <TooltipContent>Toggle Sidebar</TooltipContent>
           </Tooltip>
-          <Separator orientation="vertical" className="mr-2 h-4" />
+          <Separator  className="mr-2 h-4" />
           <div className="flex items-center gap-2 z-10">
             <Link href="/chat" className="flex items-center gap-2 font-medium">
               <div className="flex size-6 items-center justify-center rounded-md">

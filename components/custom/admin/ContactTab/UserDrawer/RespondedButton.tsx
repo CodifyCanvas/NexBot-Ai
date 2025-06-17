@@ -1,6 +1,7 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
+import { refetchContactMessages } from '@/lib/swr/mutateUsers';
 import { useState } from 'react';
 
 interface RespondedButtonProps {
@@ -30,6 +31,7 @@ export function RespondedButton({
       if (!response.ok) throw new Error('Failed to mark as responded');
 
       setIsResponded(true);
+      refetchContactMessages();
     } catch (error) {
       console.error(error);
       alert('An error occurred while marking as responded.');

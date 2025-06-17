@@ -10,9 +10,9 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 export default function ContactSection() {
 
-    const sectionRef = useRef(null);
-    const headingRef = useRef(null);
-    const titleRef = useRef(null);
+    const sectionRef = useRef<HTMLElement | null>(null);
+    const headingRef = useRef<HTMLHeadingElement | null>(null);
+    const titleRef = useRef<HTMLParagraphElement | null>(null);
     const cardRefs = useRef<(HTMLDivElement | null)[]>([]);
 
     // Reset array each render to avoid stale refs
@@ -25,40 +25,58 @@ export default function ContactSection() {
             const tl = gsap.timeline({
                 scrollTrigger: {
                     trigger: sectionRef.current,
-                    start: "top 80%", // when the top of section hits 80% of viewport
+                    start: "top 80%",
                     end: "bottom 20%",
-                    toggleActions: "play none none none", // play on enter, reverse on leave
+                    toggleActions: "play none none none",
                 },
-                defaults: { ease: "power3.out" }
+                defaults: { ease: "power3.out" },
             });
 
-            tl.fromTo(
-                sectionRef.current.querySelectorAll("div.absolute > div"),
-                { opacity: 0, scale: 0.8 },
-                { opacity: 1, scale: 1, stagger: 0.2, duration: 0.7 }
-            );
+            // Animate background bubbles
+            const bubbles = sectionRef.current?.querySelectorAll("div.absolute > div");
+            if (bubbles && bubbles.length > 0) {
+                tl.fromTo(
+                    bubbles,
+                    { opacity: 0, scale: 0.8 },
+                    { opacity: 1, scale: 1, stagger: 0.2, duration: 0.7 }
+                );
+            }
 
-            tl.fromTo(
-                titleRef.current,
-                { y: -20, opacity: 0 },
-                { y: 0, opacity: 1, stagger: 0.2, duration: 0.5 },
-            );
+            // Animate titleRefs
+            if (titleRef.current) {
+                tl.fromTo(
+                    titleRef.current,
+                    { y: -20, opacity: 0 },
+                    { y: 0, opacity: 1, stagger: 0.2, duration: 0.5 },
+                    "-=0.3"
+                );
+            }
 
-            tl.fromTo(
-                headingRef.current,
-                { y: 20, opacity: 0 },
-                { y: 0, opacity: 1, stagger: 0.2, duration: 0.5 },
-            );
+            // Animate heading
+            if (headingRef.current) {
+                tl.fromTo(
+                    headingRef.current,
+                    { y: 20, opacity: 0 },
+                    { y: 0, opacity: 1, duration: 0.5 },
+                    "-=0.3"
+                );
+            }
 
-            tl.fromTo(
-                cardRefs.current,
-                { y: 20, opacity: 0 },
-                { y: 0, opacity: 1, stagger: 0.2, duration: 0.5 }
-            );
+            // Animate cards
+            const filteredCards = cardRefs.current.filter(Boolean);
+            if (filteredCards.length > 0) {
+                tl.fromTo(
+                    filteredCards,
+                    { y: 20, opacity: 0 },
+                    { y: 0, opacity: 1, stagger: 0.2, duration: 0.5 },
+                    "-=0.3"
+                );
+            }
         }, sectionRef);
 
-        return () => ctx.revert(); // cleanup
+        return () => ctx.revert();
     }, []);
+
 
     let cardIndex = 0;
 
@@ -118,14 +136,22 @@ export default function ContactSection() {
                         </Card>
 
                         <div className="w-full flex flex-row justify-between gap-5">
-                            <Card ref={(el) => el && (cardRefs.current[cardIndex++] = el)} className="w-1/2 p-5 flex flex-col items-start isolate bg-white/5 backdrop-blur-lg">
+                            <Card ref={(el) => {
+                                if (el) {
+                                    cardRefs.current[cardIndex++] = el;
+                                }
+                            }} className="w-1/2 p-5 flex flex-col items-start isolate bg-white/5 backdrop-blur-lg">
                                 <h1 className="text-white text-3xl font-semibold">👌</h1>
                                 <div>
                                     <h1 className="text-white text-2xl sm:text-3xl font-semibold">95%</h1>
                                     <p className="text-white/50 text-sm sm:text-base font-normal text-start">Efficient</p>
                                 </div>
                             </Card>
-                            <Card ref={(el) => el && (cardRefs.current[cardIndex++] = el)} className="w-1/2 p-5 flex flex-col items-start isolate bg-white/5 backdrop-blur-lg">
+                            <Card ref={(el) => {
+                                if (el) {
+                                    cardRefs.current[cardIndex++] = el;
+                                }
+                            }} className="w-1/2 p-5 flex flex-col items-start isolate bg-white/5 backdrop-blur-lg">
                                 <h1 className="text-white text-2xl sm:text-3xl font-semibold">⭐</h1>
                                 <div>
                                     <h1 className="text-white text-2xl sm:text-3xl font-semibold">4.8</h1>

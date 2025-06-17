@@ -1,8 +1,8 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { auth } from "@/auth"; // Authentication helper
 import { deleteAllChats, fetchChats } from "@/lib/actions/chat";
 
-export async function GET(req: NextRequest) {
+export async function GET() {
   try {
     const session = await auth();
 
@@ -26,7 +26,7 @@ export async function GET(req: NextRequest) {
   }
 }
 
-export async function DELETE(req: NextRequest) {
+export async function DELETE() {
   try {
     const session = await auth();
 

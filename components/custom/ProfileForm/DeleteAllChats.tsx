@@ -97,7 +97,7 @@ const DeleteAllChats: React.FC<DeleteAllChatsProps> = ({ onClose }) => {
               <FormItem>
                 <FormLabel>Type to Confirm</FormLabel>
                 <FormControl>
-                  <Input placeholder="Delete all chats" {...field} />
+                  <Input id="delete-all-chats-field" placeholder="Delete all chats" {...field} />
                 </FormControl>
                 <FormDescription  className="text-gray-600 dark:text-gray-400">You must type &apos;Delete all chats&apos; to proceed.</FormDescription>
                 <FormMessage />

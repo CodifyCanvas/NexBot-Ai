@@ -7,6 +7,8 @@ import remarkGfm from 'remark-gfm';
 import { cn, getColorByLetter } from '@/lib/utils';
 import { Copy } from 'lucide-react';
 import { useUserContext } from '@/hooks/context/userContext';
+import { Images } from '@/constants/constants';
+import type { Paragraph } from 'mdast';
 
 interface ChatProp {
   message: string;
@@ -17,6 +19,13 @@ interface ChatProp {
 interface ChatCardProps {
   messages: ChatProp[];
 }
+
+// Define the prop type manually
+type CodeProps = {
+  inline?: boolean;
+  className?: string;
+  children?: React.ReactNode;
+} & React.HTMLAttributes<HTMLElement>;
 
 const ChatCard: React.FC<ChatCardProps> = ({ messages }) => {
   const { user } = useUserContext();
@@ -29,35 +38,35 @@ const ChatCard: React.FC<ChatCardProps> = ({ messages }) => {
   };
 
   const renderCopyButton = (message: string, index: number, isUser: boolean, isOwner: boolean) => {
-  const padding = isOwner
-    ? isUser ? 'sm:pr-12' : 'sm:pl-12'
-    : isUser ? 'sm:pr-3' : 'sm:pl-3';
+    const padding = isOwner
+      ? isUser ? 'sm:pr-12' : 'sm:pl-12'
+      : isUser ? 'sm:pr-3' : 'sm:pl-3';
 
-  return (
-    <div className={cn('w-full flex mt-1', isUser ? 'justify-end' : 'justify-start')}>
-      <button
-        onClick={() => handleCopy(message, index)}
-        className={cn(
-          'p-1 text-gray-600 hover:text-gray-950 dark:text-white/70 dark:hover:text-white transition flex items-center gap-1',
-          padding
-        )}
-        aria-label="Copy message"
-      >
-        <Copy size={15} />
-        {copiedIndex === index && (
-          <span className="text-green-800 dark:text-green-300 text-xs">Copied!</span>
-        )}
-      </button>
-    </div>
-  );
-};
+    return (
+      <div className={cn('w-full flex mt-1', isUser ? 'justify-end' : 'justify-start')}>
+        <button
+          onClick={() => handleCopy(message, index)}
+          className={cn(
+            'p-1 text-gray-600 hover:text-gray-950 dark:text-white/70 dark:hover:text-white transition flex items-center gap-1',
+            padding
+          )}
+          aria-label="Copy message"
+        >
+          <Copy size={15} />
+          {copiedIndex === index && (
+            <span className="text-green-800 dark:text-green-300 text-xs">Copied!</span>
+          )}
+        </button>
+      </div>
+    );
+  };
 
 
   return (
     <div className="w-full space-y-5 mt-10">
       {messages.map((chatItem, index) => {
         const isUser = chatItem.sender === 'user';
-        const isOwner = chatItem.profileImg;
+        const isOwner = Boolean(chatItem.profileImg);
 
         return (
           <div
@@ -65,17 +74,22 @@ const ChatCard: React.FC<ChatCardProps> = ({ messages }) => {
             className={`flex flex-col w-full px-3 ${isUser ? 'items-end' : 'items-start'}`}
           >
             <div className={`flex gap-2 w-full justify-start ${isUser ? 'flex-row-reverse' : ''}`}>
-              {isOwner && <Avatar className="mt-1 hidden sm:block">
-                <AvatarImage
-                  src={isUser ? user?.profileImg : '/assets/images/main_logo_transparent.png'}
-                  alt="avatar"
-                />
-                <AvatarFallback className={user?.name ? getColorByLetter(user.name) : getColorByLetter(chatItem.sender)}>
-                  {(user?.name || chatItem.sender).charAt(0).toUpperCase()}
-                </AvatarFallback>
-              </Avatar>
-              }
-              
+              {isOwner && (
+                <Avatar className="mt-1 hidden sm:block">
+                  <AvatarImage
+                    src={
+                      isUser
+                        ? user?.profileImg ?? undefined
+                        : Images.main_logo_transparent
+                    }
+                    alt="avatar"
+                  />
+                  <AvatarFallback className={user?.name ? getColorByLetter(user.name) : getColorByLetter(chatItem.sender)}>
+                    {(user?.name || chatItem.sender).charAt(0).toUpperCase()}
+                  </AvatarFallback>
+                </Avatar>
+              )}
+
 
               <Card
                 className={`py-2 w-fit max-w-[90%] sm:max-w-[80%] break-words ${isUser
@@ -92,7 +106,8 @@ const ChatCard: React.FC<ChatCardProps> = ({ messages }) => {
                     rehypePlugins={[rehypeSanitize]}
                     remarkPlugins={[remarkGfm]}
                     components={{
-                      code({ node, inline, className, children, ...props }) {
+                      // Inside components:
+                      code: ({ inline, className, children, ...props }: CodeProps) => {
                         return inline ? (
                           <code className="bg-muted px-1 py-0.5 rounded text-sm text-yellow-400" {...props}>
                             {children}
@@ -126,12 +141,14 @@ const ChatCard: React.FC<ChatCardProps> = ({ messages }) => {
                       strong: ({ children }) => (
                         <strong className="font-semibold text-blue-500">{children}</strong>
                       ),
-                      p({ node, children, ...props }) {
-                        const hasOnlyText = node.children.every(
-                          (child: any) => child.type === 'text'
+                      p(props) {
+                        const { children } = props;
+                        const node = props.node as Paragraph | undefined;
+
+                        const hasOnlyText = node?.children?.every(
+                          (child) => child.type === 'text'
                         );
 
-                        // If it contains only plain text or inline elements, wrap in <p>
                         if (hasOnlyText) {
                           return (
                             <p
@@ -146,9 +163,8 @@ const ChatCard: React.FC<ChatCardProps> = ({ messages }) => {
                           );
                         }
 
-                        // Otherwise, just render children directly to avoid invalid nesting
                         return <>{children}</>;
-                      }
+                      },
                     }}
                   >
                     {chatItem.message}

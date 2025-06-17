@@ -4,7 +4,7 @@ import { mysqlTable, int, text, varchar, boolean, datetime } from 'drizzle-orm/m
 
 export const users = mysqlTable('users', {
   id: int('id').primaryKey().autoincrement(),
-  profileImg: text('profile_img').notNull(),
+  profileImg: text('profile_img'),
   name: varchar('name', { length: 255 }).notNull(),
   email: varchar('email', { length: 255 }).notNull().unique(),
   password: varchar('password', { length: 255 }).notNull(),

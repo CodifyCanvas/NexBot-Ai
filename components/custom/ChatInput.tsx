@@ -33,7 +33,7 @@ export default function ChatInput({
   >([]);
 
   // Used to update both UI and local chatHistory (last 5 messages)
-  const updateChatDataWithHistory = (msg: { message: string; sender: 'user' | 'bot' }) => {
+  const updateChatDataWithHistory = (msg: { message: string; sender: 'user' | 'bot'; profileImg: boolean }) => {
     updateChatData?.(msg); // Update external UI
     setChatHistory((prev) => {
       const updated = [...prev, msg];
@@ -43,7 +43,7 @@ export default function ChatInput({
 
   useEffect(() => {
     if (session?.user?.id) {
-      setUserId(session.user.id as number);
+      setUserId(Number(session.user.id));
     }
   }, [session]);
 
@@ -76,7 +76,7 @@ export default function ChatInput({
       }
 
       // Update UI + local state when user enters a message
-      updateChatDataWithHistory({ message: trimmed, sender: 'user' });
+      updateChatDataWithHistory({ message: trimmed, sender: 'user', profileImg: true });
 
       // Send the message to the /ask API to get the bot's response
       const botRes = await fetch(`/api/chat/${chatId}/ask`, {
@@ -88,7 +88,7 @@ export default function ChatInput({
       const { message: botReply } = await botRes.json();
 
       // Update UI + local state with bot message
-      updateChatDataWithHistory({ message: botReply, sender: 'bot' });
+      updateChatDataWithHistory({ message: botReply, sender: 'bot', profileImg: true });
 
       // Redirect to chat route if it's a new chat
       if (!existingChatId) {
@@ -117,6 +117,7 @@ export default function ChatInput({
             autoFocus={focus}
             placeholder="Got a question? Ask Nexbot anything!"
             value={message}
+            id='chat-input'
             onChange={(e) => setMessage(e.target.value)}
             onKeyDown={(e) => {
               if (e.key === 'Enter' && !e.shiftKey) handleSubmit(e);

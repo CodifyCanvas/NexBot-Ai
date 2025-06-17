@@ -1,62 +1,68 @@
 "use client";
-import { useEffect, useRef } from "react";
+import { useLayoutEffect, useRef } from "react";
 import { MousePointer2 } from "lucide-react";
 import gsap from "gsap";
 import Link from "next/link";
 
 export default function HeroSection() {
   // Refs for animation targets
-  const sectionRef = useRef(null);
-  const headingRef = useRef(null);
-  const descriptionRef = useRef(null);
-  const labelsRef = useRef(null);
-  const buttonRef = useRef(null);
+  const sectionRef = useRef<HTMLElement | null>(null);
+const headingRef = useRef<HTMLDivElement | null>(null);
+const descriptionRef = useRef<HTMLParagraphElement | null>(null);
+const labelsRef = useRef<HTMLDivElement | null>(null);
+const buttonRef = useRef<HTMLButtonElement | null>(null);
 
-  useEffect(() => {
-    // GSAP timeline
-    const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
 
-    // Animate background circles (fade in)
-    tl.fromTo(
-      sectionRef.current.querySelectorAll("div.absolute > div"),
-      { opacity: 0, scale: 0.8 },
-      { opacity: 1, scale: 1, stagger: 0.2, duration: 1 }
-    );
+  useLayoutEffect(() => {
+  const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
 
-    // Animate labels (fade and slide)
+  if (sectionRef.current) {
+    const bubbles = sectionRef.current.querySelectorAll("div.absolute > div");
+    if (bubbles.length > 0) {
+      tl.fromTo(
+        bubbles,
+        { opacity: 0, scale: 0.8 },
+        { opacity: 1, scale: 1, stagger: 0.2, duration: 1 }
+      );
+    }
+  }
+
+  if (labelsRef.current?.children) {
     tl.fromTo(
       labelsRef.current.children,
-      {y: 20, opacity: 0},
-      {y: 0, opacity: 1, stagger: 0.2, duration: 0.5 },
+      { y: 20, opacity: 0 },
+      { y: 0, opacity: 1, stagger: 0.2, duration: 0.5 },
       "-=0.5"
     );
+  }
 
-
-    // Animate heading
+  if (headingRef.current?.children) {
     tl.fromTo(
       headingRef.current.children,
       { scale: 0.75, opacity: 0 },
       { scale: 1, opacity: 1, stagger: 0.2, duration: 0.5 },
       "-=0.4"
     );
+  }
 
-    // Animate description
+  if (descriptionRef.current) {
     tl.fromTo(
       descriptionRef.current,
       { y: -20, opacity: 0 },
       { y: 0, opacity: 1, duration: 0.5 },
       "-=0.2"
     );
+  }
 
-    // Animate button
+  if (buttonRef.current) {
     tl.fromTo(
       buttonRef.current,
       { scale: 0.8, opacity: 0 },
-      { scale: 1, opacity: 1, stagger: 0.2, duration: 0.6 },
+      { scale: 1, opacity: 1, duration: 0.6 },
       "-=0.2"
     );
-
-  }, []);
+  }
+}, []);
 
   return (
     <section

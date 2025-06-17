@@ -1,47 +1,37 @@
-'use client';
-
-import { Table as ReactTable } from '@tanstack/react-table';
+import { Table } from '@tanstack/react-table';
+import { refetchUsers, refetchContactMessages } from '@/lib/swr/mutateUsers';
 import { TableBulkDeleteAction } from './table-bulk-delete-action';
-import { refetchContactMessages, refetchUsers } from '@/lib/swr/mutateUsers';
 
-interface UnifiedDataTableActionsProps {
-  table: ReactTable<any>;
-  mode: 'user' | 'inbox'; // determines what type of data and API to use
-}
+type UnifiedDataTableActionsProps<T extends { id: string | number }> = {
+  mode: 'user' | 'inbox';
+  table: Table<T>;
+};
 
-/**
- * UnifiedDataTableActions
- * Renders bulk delete action component configured based on the mode.
- * - mode 'user': bulk delete users
- * - mode 'inbox': bulk delete inbox messages
- */
 
-export function UnifiedDataTableActions({
-  table,
-  mode,
-}: UnifiedDataTableActionsProps) {
-  switch (mode) {
-    case 'user':
-      return (
-        <TableBulkDeleteAction
-          table={table}
-          entityName="user"
-          apiEndpoint="/api/user/delete-many-users"
-          onSuccess={refetchUsers}
-        />
-      );
+export function UnifiedDataTableActions<T extends { id: string | number }>(
+  props: UnifiedDataTableActionsProps<T>
+) {
+  const { mode, table } = props;
 
-    case 'inbox':
-      return (
-        <TableBulkDeleteAction
-          table={table}
-          entityName="message"
-          apiEndpoint="/api/contact/delete-many-messages"
-          onSuccess={refetchContactMessages}
-        />
-      );
-
-    default:
-      return null; // no action for unknown mode
+  if (mode === 'user') {
+    return (
+      <TableBulkDeleteAction<T>
+        table={table}
+        entityName="user"
+        apiEndpoint="/api/user/delete-many-users"
+        onSuccess={refetchUsers}
+      />
+    );
+  } else if (mode === 'inbox') {
+    return (
+      <TableBulkDeleteAction<T>
+        table={table}
+        entityName="message"
+        apiEndpoint="/api/contact/delete-many-messages"
+        onSuccess={refetchContactMessages}
+      />
+    );
   }
+  return null;
 }
+

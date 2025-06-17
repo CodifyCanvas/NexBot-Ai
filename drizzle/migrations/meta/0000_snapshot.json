@@ -1,7 +1,7 @@
 {
   "version": "5",
   "dialect": "mysql",
-  "id": "38e01c02-df16-4b75-9cd4-38062f7873b3",
+  "id": "6b183277-57c3-491a-bc8e-ca2be22f1405",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "chats": {
@@ -42,6 +42,14 @@
           "notNull": true,
           "autoincrement": false,
           "default": false
+        },
+        "color": {
+          "name": "color",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": 1
         },
         "created_at": {
           "name": "created_at",
@@ -86,8 +94,68 @@
       },
       "checkConstraint": {}
     },
-    "favouritesChats": {
-      "name": "favouritesChats",
+    "contact_us": {
+      "name": "contact_us",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": true
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "email": {
+          "name": "email",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "message": {
+          "name": "message",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "responded_at": {
+          "name": "responded_at",
+          "type": "datetime",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "datetime",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "CURRENT_TIMESTAMP"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {
+        "contact_us_id": {
+          "name": "contact_us_id",
+          "columns": [
+            "id"
+          ]
+        }
+      },
+      "uniqueConstraints": {},
+      "checkConstraint": {}
+    },
+    "favoriteChats": {
+      "name": "favoriteChats",
       "columns": {
         "id": {
           "name": "id",
@@ -121,9 +189,9 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "favouritesChats_user_id_users_id_fk": {
-          "name": "favouritesChats_user_id_users_id_fk",
-          "tableFrom": "favouritesChats",
+        "favoriteChats_user_id_users_id_fk": {
+          "name": "favoriteChats_user_id_users_id_fk",
+          "tableFrom": "favoriteChats",
           "tableTo": "users",
           "columnsFrom": [
             "user_id"
@@ -136,16 +204,16 @@
         }
       },
       "compositePrimaryKeys": {
-        "favouritesChats_id": {
-          "name": "favouritesChats_id",
+        "favoriteChats_id": {
+          "name": "favoriteChats_id",
           "columns": [
             "id"
           ]
         }
       },
       "uniqueConstraints": {
-        "favouritesChats_chat_id_unique": {
-          "name": "favouritesChats_chat_id_unique",
+        "favoriteChats_chat_id_unique": {
+          "name": "favoriteChats_chat_id_unique",
           "columns": [
             "chat_id"
           ]
@@ -234,7 +302,7 @@
           "name": "profile_img",
           "type": "text",
           "primaryKey": false,
-          "notNull": true,
+          "notNull": false,
           "autoincrement": false
         },
         "name": {
@@ -260,6 +328,14 @@
         },
         "admin": {
           "name": "admin",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": false
+        },
+        "verified": {
+          "name": "verified",
           "type": "boolean",
           "primaryKey": false,
           "notNull": true,

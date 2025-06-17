@@ -41,21 +41,21 @@ const Footer = () => {
       <section className="container max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-end border-b border-white/30 pb-4 gap-6">
         {/* Logo & Description */}
         <div className="flex-1">
-          <div className="flex items-center gap-2 mb-2">
-            <Image
-              src={Images.main_logo_transparent}
-              alt="NexBot Logo"
-              width={30}
-              height={30}
-              priority
-            />
-            <Link href="/" className="text-lg font-bold text-white">
+          <div className="mb-2">
+            <Link href="/" className="flex items-center gap-2 text-lg font-bold text-white">
+              <Image
+                src={Images.main_logo_transparent}
+                alt="NexBot Logo"
+                width={30}
+                height={30}
+                priority
+              />
               NexBot
             </Link>
           </div>
           <p className="text-white/50 text-sm leading-relaxed">
-  NexBot is your intelligent AI companion, designed to simplify conversations and spark creativity—making every chat smarter and more meaningful.
-</p>
+            NexBot is your intelligent AI companion, designed to simplify conversations and spark creativity—making every chat smarter and more meaningful.
+          </p>
 
         </div>
 

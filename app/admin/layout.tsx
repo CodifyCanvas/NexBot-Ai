@@ -7,12 +7,12 @@ import Link from 'next/link';
 
 import { UserProvider } from '@/hooks/context/userContext';
 import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
-import { Separator } from '@radix-ui/react-dropdown-menu';
 import { cn } from '@/lib/utils';
 import { Images, Names } from '@/constants/constants';
 import { NavActions } from '@/components/nav-actions';
 import NotFound from '../not-found';
 import Spinner from '@/components/custom/Spinner';
+import { useShortcuts } from '@/hooks/useShortcuts';
 
 interface ChatLayoutProps {
   children: ReactNode;
@@ -28,6 +28,8 @@ export default function ChatLayout({ children }: ChatLayoutProps) {
   useEffect(() => {
     setIsMounted(true);
   }, []);
+
+  useShortcuts();
 
   // Admin check using API call
   const fetchAdminStatus = useCallback(async () => {
@@ -84,10 +86,9 @@ export default function ChatLayout({ children }: ChatLayoutProps) {
         <SidebarInset className="bg-transparent">
           {/* Header Section */}
           <header className="flex h-14 items-center gap-2 border-b dark:border-white/25 border-black/15 px-3">
-            <Separator orientation="vertical" className="mr-2 h-4" />
 
             {/* Logo and App Name */}
-            <div className="flex items-center gap-2 z-10">
+            <div className="flex items-center gap-2 pl-3 z-10">
               <Link href="/chat" className="flex items-center gap-2 font-medium">
                 <div className="flex size-6 items-center justify-center rounded-md">
                   <Image

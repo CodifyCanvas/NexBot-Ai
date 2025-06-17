@@ -1,35 +1,31 @@
-// auth.config.ts
-import type { NextAuthConfig } from 'next-auth';
+import type { NextRequest } from 'next/server';
+import type { Session } from 'next-auth';
 
 export const authConfig = {
   pages: {
     signIn: '/login',
   },
   callbacks: {
-    authorized({ auth, request: { nextUrl } }) {
+    authorized({ auth, request }: { auth: Session | null; request: NextRequest }) {
       const isLoggedIn = !!auth?.user;
 
-      // Define the protected paths
       const protectedRoutes = ['/chat', '/admin'];
       const isProtected = protectedRoutes.some(path =>
-        nextUrl.pathname.startsWith(path)
+        request.nextUrl.pathname.startsWith(path)
       );
 
-      const isOnLoginPage = nextUrl.pathname === '/login';
+      const isOnLoginPage = request.nextUrl.pathname === '/login';
 
       if (isProtected) {
-        // Block access if not logged in
         return isLoggedIn;
       }
 
       if (isLoggedIn && isOnLoginPage) {
-        // Redirect logged-in users away from login page
-        return Response.redirect(new URL('/chat', nextUrl));
+        return Response.redirect(new URL('/chat', request.nextUrl));
       }
 
-      // Allow access to non-protected public routes
       return true;
     },
   },
-  providers: [], // Add providers here
-} satisfies NextAuthConfig;
+  providers: [],
+};
